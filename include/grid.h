@@ -15,10 +15,12 @@
 #include <type_traits>
 #include <utility>
 
+// CRTP
+#include <crtp/crtp.h>
+
 // TwoD
 #include <twod/bounds.h>
 #include <twod/coordinates.h>
-#include <twod/crtp.h>
 #include <twod/fwd.h>
 #include <twod/primitives.h>
 
@@ -317,7 +319,7 @@ protected:
   }
 
 private:
-  IMPLEMENT_CRTP_BASE_CLASS(Derived);
+  IMPLEMENT_CRTP_BASE_CLASS(GridBase, Derived);
 };
 
 
@@ -471,7 +473,7 @@ protected:
   template<typename OtherViewT> friend class RowViewIterator;
 
 private:
-  IMPLEMENT_CRTP_BASE_CLASS(Derived);
+  IMPLEMENT_CRTP_BASE_CLASS(ViewIteratorBase, Derived);
 };
 
 

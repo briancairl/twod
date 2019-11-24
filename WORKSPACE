@@ -1,5 +1,14 @@
 workspace(name="twod")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+# CRTP
+git_repository(
+    name="crtp",
+    commit="f3f9e36411529f6a771d77a6f9c4c955b1eb5b90",
+    remote="git@github.com:briancairl/crtp.git",
+)
+
 
 # GTest/GMock
 http_archive(

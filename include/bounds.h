@@ -8,9 +8,11 @@
 #ifndef TWOD_BOUNDS_H
 #define TWOD_BOUNDS_H
 
+// CRTP
+#include <crtp/crtp.h>
+
 // TwoD
 #include <twod/coordinates.h>
-#include <twod/crtp.h>
 #include <twod/fwd.h>
 #include <twod/primitives.h>
 
@@ -99,7 +101,7 @@ public:
   }
 
 private:
-  IMPLEMENT_CRTP_BASE_CLASS(Derived);
+  IMPLEMENT_CRTP_BASE_CLASS(BoundsBase, Derived);
 };
 
 
@@ -274,7 +276,7 @@ protected:
   Indices past_corner_;
 
 private:
-  IMPLEMENT_CRTP_BASE_CLASS(Derived);
+  IMPLEMENT_CRTP_BASE_CLASS(BoundsIteratorBase, Derived);
 };
 
 

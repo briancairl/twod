@@ -140,7 +140,7 @@ protected:
   ContainerT data_;
 
 private:
-  IMPLEMENT_CRTP_BASE_CLASS(Derived);
+  IMPLEMENT_CRTP_BASE_CLASS(ContainerAccessBase, Derived);
 
   inline const auto& access_impl(const Indices& pt) const
   {
@@ -208,7 +208,7 @@ protected:
   PtrT data_;
 
 private:
-  IMPLEMENT_CRTP_BASE_CLASS(Derived);
+  IMPLEMENT_CRTP_BASE_CLASS(RawAccessBase, Derived);
 
   inline const auto& access_impl(const Indices& pt) const
   {
