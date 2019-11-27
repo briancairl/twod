@@ -204,6 +204,16 @@ public:
     other.data_ = this_data;
   }
 
+  inline PtrT data()
+  {
+    return data_;
+  }
+
+  inline const PtrT data() const
+  {
+    return data_;
+  }
+
 protected:
   PtrT data_;
 
