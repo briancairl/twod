@@ -337,6 +337,11 @@ public:
 };
 
 
+/// Convenience cell-type using template, based on GridTraits
+template<typename GridT>
+using cell_t = typename twod::GridTraits<GridT>::cell_type;
+
+
 /// End-tag object
 struct ViewIteratorEnd {};
 

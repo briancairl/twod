@@ -10,7 +10,7 @@ Grids and views are implemented with a common CRTP base. Functions working on gr
 template<typename DerivedT, typename BoundsT>
 void doThing(twod::GridBase<DerivedT, BoundsT>& grid, ...)
 {
-  grid[twod::Indices{1, 1}] = <cell type>;
+  grid[twod::Indices{1, 1}] = twod::cell_t<DerivedT>{...};
 
   /// etc.
 }
