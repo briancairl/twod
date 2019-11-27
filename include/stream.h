@@ -41,7 +41,7 @@ inline std::ostream& operator<<(std::ostream& os, const GridBase<Derived, CellT>
   int new_line_count = 0;
   for (auto itr = RowViewIterator<Base>{grid}; itr != ViewIteratorEnd{}; ++itr)
   {
-    os << std::setw(4) << *itr;
+    os << std::setprecision(4) << std::setw(6) << *itr;
     if (++new_line_count == grid.extents().y)
     {
       os << '\n';
