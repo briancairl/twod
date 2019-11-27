@@ -7,10 +7,10 @@ Collection of generic grid and grid viewing containers. Includes dynamic, fixed 
 Grids and views are implemented with a common CRTP base. Functions working on grids can be written like so to accept any grid-like type:
 
 ```c++
-template<typename Derived, typename CellT>
-void doThing(twod::GridBase<Derived, CellT>& grid, ...)
+template<typename DerivedT, typename BoundsT>
+void doThing(twod::GridBase<DerivedT, BoundsT>& grid, ...)
 {
-  grid[twod::Indices{1, 1}] = CellT{...};
+  grid[twod::Indices{1, 1}] = <cell type>;
 
   /// etc.
 }
