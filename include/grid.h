@@ -756,6 +756,16 @@ public:
     this->construct(std::forward<CellArgs>(cell_args)...);
   }
 
+  inline Grid& operator=(const Grid& other)
+  {
+    if (other.extents() != this->extents())
+    {
+      Base::reset(other.extents());
+    }
+    Base::operator=(other);
+    return *this;
+  }
+
 private:
   friend StorageBase;
 
