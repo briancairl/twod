@@ -671,8 +671,6 @@ class Grid :
   using Base = GridBase<Grid, FixedOriginBounds<0, 0>>;
   using StorageBase = RawAccessBase<Grid, CellT*>;
 public:
-  using Base::operator=;
-
   Grid(const Extents& extents = Extents::Zero()) :
     Base{extents},
     StorageBase{allocator_.allocate(extents.area())}
@@ -720,14 +718,6 @@ public:
   {
   }
 
-  Grid& operator=(Grid&& other)
-  {
-    Base::reset(other.extents());
-    this->data_ = other.data_;
-    other.data_ = nullptr;
-    return *this;
-  }
-
   ~Grid()
   {
     clear();
@@ -747,22 +737,51 @@ public:
     allocator_.deallocate(this->data_, this->extents().area());
   }
 
-  template<typename... CellArgs>
-  inline void resize(const Extents& extents, CellArgs&&... cell_args)
+  inline void resize(const Extents& extents, const CellT& value)
   {
-    clear();
-    Base::reset(extents);
-    this->data_ = allocator_.allocate(extents.area());
-    this->construct(std::forward<CellArgs>(cell_args)...);
+    // Don't resize/realloc
+    if (this->extents() == extents)
+    {
+      std::fill(this->begin(), this->end(), value);
+      return;
+    }
+    else
+    {
+      clear();
+      Base::reset(extents);
+      this->data_ = allocator_.allocate(extents.area());
+      this->construct(value);
+    }
+  }
+
+  inline void resize(const Extents& extents)
+  {
+    // Don't resize/realloc
+    if (this->extents() == extents)
+    {
+      return;
+    }
+    else
+    {
+      clear();
+      Base::reset(extents);
+      this->data_ = allocator_.allocate(extents.area());
+      this->construct();
+    }
+  }
+
+  inline Grid& operator=(Grid&& other)
+  {
+    Base::reset(other.extents());
+    this->data_ = other.data_;
+    other.data_ = nullptr;
+    return *this;
   }
 
   inline Grid& operator=(const Grid& other)
   {
-    if (other.extents() != this->extents())
-    {
-      Base::reset(other.extents());
-    }
-    Base::operator=(other);
+    this->resize(other.extents());
+    std::copy(this->begin(), this->end(), other.begin());
     return *this;
   }
 

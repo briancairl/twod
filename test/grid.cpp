@@ -183,6 +183,20 @@ TEST(Grid, ViewBoundsIteration)
 }
 
 
+TEST(Grid, Assignment)
+{
+  Grid<int> grid_a{Extents{20, 10}, 1};
+
+  Grid<int> grid_b{Extents{20, 10}, 2};
+
+  ASSERT_NE(grid_b, grid_a);
+
+  grid_b = grid_a;
+
+  ASSERT_EQ(grid_b, grid_a);
+}
+
+
 TEST(GridTraits, CellType)
 {
   Grid<int> grid;
