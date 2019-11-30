@@ -183,7 +183,21 @@ TEST(Grid, ViewBoundsIteration)
 }
 
 
-TEST(Grid, Assignment)
+TEST(Grid, AssignmentDifferentSizeSameValues)
+{
+  Grid<int> grid_a{Extents{20, 10}, 1};
+
+  Grid<int> grid_b{Extents{10, 20}, 1};
+
+  ASSERT_NE(grid_b, grid_a);
+
+  grid_b = grid_a;
+
+  ASSERT_EQ(grid_b, grid_a);
+}
+
+
+TEST(Grid, AssignmentSameSizeDifferentValues)
 {
   Grid<int> grid_a{Extents{20, 10}, 1};
 

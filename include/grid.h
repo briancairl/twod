@@ -188,6 +188,13 @@ public:
   template<typename OtherDerived>
   inline bool operator!=(const GridBase<OtherDerived, BoundsT>& other) const
   {
+    // Compare grid extents, first
+    if (this->extents() != other.extents())
+    {
+      return true;
+    }
+
+    // Compare values
     auto this_itr = derived()->begin();
     for (auto other_itr = other.begin(); other_itr != other.end(); ++other_itr, ++this_itr)
     {
