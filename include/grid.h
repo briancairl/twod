@@ -776,7 +776,7 @@ public:
   inline Grid& operator=(const Grid& other)
   {
     this->resize(other.extents());
-    std::copy(this->begin(), this->end(), other.begin());
+    std::copy(other.begin(), other.end(),this->begin());
     return *this;
   }
 
