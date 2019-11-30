@@ -93,11 +93,7 @@ public:
   template<typename OtherDerived, typename OtherBoundsT>
   inline Derived& operator=(const GridBase<OtherDerived, OtherBoundsT>& other)
   {
-    auto this_itr = derived()->begin();
-    for (auto other_itr = other.begin(); other_itr != other.end(); ++other_itr, ++this_itr)
-    {
-      *this_itr = *other_itr;
-    }
+    std::copy(other.begin(), other.end(), this->begin());
     return *derived();
   }
 
@@ -195,15 +191,7 @@ public:
     }
 
     // Compare values
-    auto this_itr = derived()->begin();
-    for (auto other_itr = other.begin(); other_itr != other.end(); ++other_itr, ++this_itr)
-    {
-      if (*this_itr != *other_itr)
-      {
-        return true;
-      }
-    }
-    return false;
+    return !std::equal(other.begin(), other.end(), derived()->begin());
   }
 
   /**
