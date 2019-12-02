@@ -738,7 +738,6 @@ public:
     if (this->extents() == extents)
     {
       std::fill(this->begin(), this->end(), value);
-      return;
     }
     else
     {
@@ -752,11 +751,7 @@ public:
   inline void resize(const Extents& extents)
   {
     // Don't resize/realloc
-    if (this->extents() == extents)
-    {
-      return;
-    }
-    else
+    if (this->extents() != extents)
     {
       clear();
       Base::reset(extents);
