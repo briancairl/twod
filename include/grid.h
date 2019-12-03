@@ -10,7 +10,6 @@
 
 // C++ Standard Library
 #include <array>
-#include <iterator>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -307,10 +306,9 @@ protected:
     BoundsT{std::forward<Args>(args)...}
   {}
 
-  template<typename... Args>
-  void reset(Args&&... args)
+  inline void set_extents(const Extents& extents)
   {
-    new (this) GridBase{std::forward<Args>(args)...};
+    BoundsT::set_extents(extents);
   }
 
 private:
@@ -666,7 +664,12 @@ class Grid :
   using Base = GridBase<Grid, FixedOriginBounds<0, 0>>;
   using StorageBase = RawAccessBase<Grid, CellT*>;
 public:
-  Grid(const Extents& extents = Extents::Zero()) :
+  Grid() :
+    Base{Extents::Zero()},
+    StorageBase{nullptr}
+  {}
+
+  explicit Grid(const Extents& extents) :
     Base{extents},
     StorageBase{allocator_.allocate(extents.area())}
   {
@@ -697,20 +700,15 @@ public:
   }
 
   Grid(const Grid& other) :
-    Base{other.extents()},
-    StorageBase{allocator_.allocate(other.extents().area())}
+    Grid{}
   {
-    auto assign_itr = this->begin();
-    for (const auto& c : other)
-    {
-      *(assign_itr++) = c;
-    }
+    Grid::operator=(other);
   }
 
   Grid(Grid&& other) :
-    Base{other.extents()},
-    StorageBase{std::forward<StorageBase>(other)}
+    Grid{}
   {
+    Grid::operator=(std::move(other));
   }
 
   ~Grid()
@@ -720,58 +718,82 @@ public:
 
   inline void clear()
   {
-    if (!this->data_)
+    // Don't do anything if data isn't set
+    if (Grid::data_ == nullptr)
     {
       return;
     }
 
-    for (auto d = this->begin(); d != this->end(); ++d)
+    // Deallocate + destory
+    for (auto d = Grid::begin(); d != Grid::end(); ++d)
     {
       allocator_.destroy(d);
     }
-    allocator_.deallocate(this->data_, this->extents().area());
+    allocator_.deallocate(Grid::data_, Grid::extents().area());
+
+    // Reset data pointer and extents
+    Grid::data_ = nullptr;
+    Base::set_extents(Extents::Zero());
   }
 
   inline void resize(const Extents& extents, const CellT& value)
   {
-    // Don't resize/realloc
-    if (this->extents() == extents)
+    if (extents.isZero())
     {
-      std::fill(this->begin(), this->end(), value);
+      Grid::clear();
+    }
+    else if (Grid::extents() == extents)
+    {
+      std::fill(Grid::begin(), Grid::end(), value);
     }
     else
     {
-      clear();
-      Base::reset(extents);
-      this->data_ = allocator_.allocate(extents.area());
-      this->construct(value);
+      Grid::clear();
+      Base::set_extents(extents);
+      Grid::data_ = allocator_.allocate(extents.area());
+      Grid::construct(value);
     }
   }
 
   inline void resize(const Extents& extents)
   {
-    // Don't resize/realloc
-    if (this->extents() != extents)
+    if (extents.isZero())
     {
-      clear();
-      Base::reset(extents);
-      this->data_ = allocator_.allocate(extents.area());
-      this->construct();
+      Grid::clear();
+    }
+    else if (Grid::extents() == extents)
+    {
+      return;
+    }
+    else
+    {
+      Grid::clear();
+      Base::set_extents(extents);
+      Grid::data_ = allocator_.allocate(extents.area());
+      Grid::construct();
     }
   }
 
   inline Grid& operator=(Grid&& other)
   {
-    Base::reset(other.extents());
-    this->data_ = other.data_;
+    Base::set_extents(other.extents());
+    Grid::data_ = other.data_;
     other.data_ = nullptr;
+    other.set_extents(Extents::Zero());
     return *this;
   }
 
   inline Grid& operator=(const Grid& other)
   {
-    this->resize(other.extents());
-    std::copy(other.begin(), other.end(),this->begin());
+    if (other.data_ == nullptr or other.extents().isZero())
+    {
+      Grid::clear();
+    }
+    else
+    {
+      Grid::resize(other.extents());
+      std::copy(other.begin(), other.end(), Grid::begin());
+    }
     return *this;
   }
 
@@ -781,7 +803,7 @@ private:
   template<typename... CellArgs>
   inline void construct(CellArgs&&... cell_args)
   {
-    for (auto d = this->begin(); d != this->end(); ++d)
+    for (auto d = Grid::begin(); d != Grid::end(); ++d)
     {
       allocator_.construct(d, std::forward<CellArgs>(cell_args)...);
     }
@@ -789,9 +811,9 @@ private:
 
   inline void swap_resize_impl(Grid& other)
   {
-    const auto tmp_extents = this->extents();
-    other.reset(other.extents());
-    this->reset(tmp_extents);
+    const auto tmp_extents = other.extents();
+    other.set_extents(Grid::extents());
+    Grid::set_extents(tmp_extents);
   }
 
   /// Allocator

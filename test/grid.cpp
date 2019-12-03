@@ -22,6 +22,7 @@ TEST(Grid, DefaultConstructor)
 {
   Grid<int> grid;
 
+  ASSERT_EQ(grid.data(), nullptr);
   ASSERT_EQ(grid.extents(), Extents::Zero());
   ASSERT_TRUE(grid.empty());
 }
@@ -49,6 +50,216 @@ TEST(Grid, UniformInitialValueConstructor)
   }
 }
 
+
+TEST(Grid, CopyConstructor)
+{
+  const Grid<int> initial_grid{Extents{20, 10}, 1};
+
+  ASSERT_EQ(initial_grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(initial_grid.empty());
+
+  for (const auto& v : initial_grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+
+  Grid<int> grid{initial_grid};
+
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(grid.empty());
+
+  for (const auto& v : grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+}
+
+
+TEST(Grid, CopyConstructorEmpty)
+{
+  const Grid<int> empty_grid;
+
+  Grid<int> grid{Extents{20, 10}, 1};
+
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(grid.empty());
+
+  for (const auto& v : grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+
+  grid = empty_grid;
+
+  ASSERT_EQ(grid.extents(), Extents::Zero());
+  ASSERT_EQ(grid.data(), nullptr);
+}
+
+
+TEST(Grid, MoveConstructor)
+{
+  Grid<int> initial_grid{Extents{20, 10}, 1};
+
+  ASSERT_EQ(initial_grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(initial_grid.empty());
+
+  for (const auto& v : initial_grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+
+  Grid<int> grid{std::move(initial_grid)};
+
+  ASSERT_EQ(initial_grid.data(), nullptr);
+  ASSERT_EQ(initial_grid.extents(), Extents::Zero());
+
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(grid.empty());
+
+  for (const auto& v : grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+}
+
+
+TEST(Grid, ModeConstructorEmpty)
+{
+  Grid<int> empty_grid;
+
+  Grid<int> grid{Extents{20, 10}, 1};
+
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(grid.empty());
+
+  for (const auto& v : grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+
+  grid = std::move(empty_grid);
+
+  ASSERT_EQ(grid.extents(), Extents::Zero());
+  ASSERT_EQ(grid.data(), nullptr);
+}
+
+
+TEST(Grid, CopyAssignment)
+{
+  const Grid<int> initial_grid{Extents{20, 10}, 1};
+
+  ASSERT_EQ(initial_grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(initial_grid.empty());
+
+  for (const auto& v : initial_grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+
+  Grid<int> grid;
+
+  grid = initial_grid;
+
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(grid.empty());
+
+  for (const auto& v : grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+}
+
+
+TEST(Grid, CopyAssignmentEmpty)
+{
+  Grid<int> initial_grid{Extents{20, 10}, 1};
+
+  ASSERT_EQ(initial_grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(initial_grid.empty());
+
+  for (const auto& v : initial_grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+
+  Grid<int> grid;
+
+  initial_grid = grid;
+
+  ASSERT_EQ(grid.extents(), Extents::Zero());
+  ASSERT_EQ(grid.data(), nullptr);
+}
+
+
+
+TEST(Grid, MoveAssignment)
+{
+  Grid<int> initial_grid{Extents{20, 10}, 1};
+
+  ASSERT_EQ(initial_grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(initial_grid.empty());
+
+  for (const auto& v : initial_grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+
+  Grid<int> grid;
+
+  grid = std::move(initial_grid);
+
+  ASSERT_EQ(initial_grid.data(), nullptr);
+  ASSERT_EQ(initial_grid.extents(), Extents::Zero());
+
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(grid.empty());
+
+  for (const auto& v : grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+}
+
+
+TEST(Grid, ModeAssignmentEmpty)
+{
+  Grid<int> initial_grid{Extents{20, 10}, 1};
+
+  ASSERT_EQ(initial_grid.extents(), (Extents{20, 10}));
+  ASSERT_FALSE(initial_grid.empty());
+
+  for (const auto& v : initial_grid)
+  {
+    ASSERT_EQ(v, 1);
+  }
+
+  Grid<int> grid;
+
+  initial_grid = grid;
+
+  ASSERT_EQ(grid.extents(), Extents::Zero());
+  ASSERT_EQ(grid.data(), nullptr);
+}
+
+
+TEST(Grid, Swap)
+{
+  Grid<int> grid{Extents{20, 10}};
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+
+  const auto* prev_data_ptr = grid.data();
+
+  Grid<int> swap_to_grid;
+  swap_to_grid.swap(grid);
+
+  ASSERT_EQ(grid.data(), nullptr);
+  ASSERT_EQ(grid.extents(), Extents::Zero());
+
+  ASSERT_EQ(swap_to_grid.data(), prev_data_ptr);
+  ASSERT_EQ(swap_to_grid.extents(), (Extents{20, 10}));
+}
+
+
 TEST(Grid, Resize)
 {
   Grid<int> grid{Extents{20, 10}};
@@ -71,6 +282,61 @@ TEST(Grid, ResizeValue)
   {
     ASSERT_EQ(v, 1);
   }
+}
+
+
+TEST(Grid, ResizeSameSize)
+{
+  Grid<int> grid{Extents{20, 10}};
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+
+  const auto* prev_data_ptr = grid.data();
+  grid.resize(Extents{20, 10});
+
+  ASSERT_EQ(grid.data(), prev_data_ptr);
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+}
+
+
+TEST(Grid, ResizeZeroSize)
+{
+  Grid<int> grid{Extents{20, 10}};
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+
+  ASSERT_NE(grid.data(), nullptr);
+
+  grid.resize(Extents::Zero());
+
+  ASSERT_EQ(grid.data(), nullptr);
+  ASSERT_EQ(grid.extents(), Extents::Zero());
+}
+
+
+TEST(Grid, ResizeZeroSizeValue)
+{
+  Grid<int> grid{Extents{20, 10}};
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+
+  ASSERT_NE(grid.data(), nullptr);
+
+  grid.resize(Extents::Zero(), 3);
+
+  ASSERT_EQ(grid.data(), nullptr);
+  ASSERT_EQ(grid.extents(), Extents::Zero());
+}
+
+
+TEST(Grid, Clear)
+{
+  Grid<int> grid{Extents{20, 10}};
+  ASSERT_EQ(grid.extents(), (Extents{20, 10}));
+
+  ASSERT_NE(grid.data(), nullptr);
+
+  grid.clear();
+
+  ASSERT_EQ(grid.data(), nullptr);
+  ASSERT_EQ(grid.extents(), Extents::Zero());
 }
 
 
