@@ -25,11 +25,6 @@ struct Coordinates
 
   constexpr Coordinates(const Coordinates&) = default;
 
-  constexpr Coordinates(CoordT _d) :
-    x{_d},
-    y{_d}
-  {}
-
   constexpr Coordinates(CoordT _x, CoordT _y) :
     x{_x},
     y{_y}
@@ -92,6 +87,11 @@ struct Coordinates
   constexpr int area() const
   {
     return x * y;
+  }
+
+  constexpr bool isZero() const
+  {
+    return *this == Coordinates::Zero();
   }
 
   constexpr static Coordinates Zero()

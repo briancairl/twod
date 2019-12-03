@@ -105,11 +105,12 @@ private:
 };
 
 
-struct Bounds :
+class Bounds :
   public BoundsBase<Bounds>,
   public DynamicOriginBase,
   public ResizableExtentsBase
 {
+public:
   template<typename Derived>
   Bounds(const BoundsBase<Derived>& bounds) :
     DynamicOriginBase{bounds.origin()},
@@ -120,15 +121,22 @@ struct Bounds :
     DynamicOriginBase{origin},
     ResizableExtentsBase{extents}
   {}
+
+protected:
+  inline void set_extents(const Extents& extents)
+  {
+    ResizableExtentsBase::extents_ = extents;
+  }
 };
 
 
 template<int OriginX, int OriginY>
-struct FixedOriginBounds :
+class FixedOriginBounds :
   public BoundsBase<FixedOriginBounds<OriginX, OriginY>>,
   public FixedOriginBase<OriginX, OriginY>,
   public ResizableExtentsBase
 {
+public:
   template<typename Derived>
   FixedOriginBounds(const BoundsBase<Derived>& bounds) :
     ResizableExtentsBase{bounds.extents()}
@@ -137,6 +145,12 @@ struct FixedOriginBounds :
   FixedOriginBounds(const Extents& extents) :
     ResizableExtentsBase{extents}
   {}
+
+protected:
+  inline void set_extents(const Extents& extents)
+  {
+    ResizableExtentsBase::extents_ = extents;
+  }
 };
 
 
