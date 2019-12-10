@@ -835,7 +835,7 @@ private:
 
 
 template<typename CellT, typename AllocatorT>
-struct Grid<Grid<CellT, AllocatorT>>
+struct GridTraits<Grid<CellT, AllocatorT>>
 {
   using cell_type = CellT;
 };
