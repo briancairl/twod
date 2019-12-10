@@ -147,6 +147,13 @@ private:
   friend GBase;
 };
 
+
+template<typename CellT, int Height, int Width, int TileHeight, int TileWidth>
+struct GridTraits<FixedTiledGrid<CellT, Height, Width, TileHeight, TileWidth>>
+{
+  using cell_type = CellT;
+};
+
 }  // namespace twod
 
 #endif // TWOD_TILED_GRID_H

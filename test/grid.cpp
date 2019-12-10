@@ -477,14 +477,6 @@ TEST(Grid, AssignmentSameSizeDifferentValues)
 }
 
 
-TEST(GridTraits, CellType)
-{
-  Grid<int> grid;
-
-  ASSERT_TRUE((std::is_same<GridTraits<decltype(grid)>::cell_type, int>()));
-}
-
-
 TEST(View, FixedOriginExtentsBoundsRangeIteration)
 {
   Grid<int> grid{Extents{20, 10}, 1};

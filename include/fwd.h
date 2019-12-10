@@ -17,7 +17,6 @@ template<typename CoordT> struct Coordinates;
 template<typename GridT> struct Tile;
 template<typename Derived, typename BoundsT> class GridBase;
 template<typename Derived> class BoundsBase;
-template<typename GridT> class GridTraits;
 template<typename ViewT> class ColViewIterator;
 template<typename ViewT> class RowViewIterator;
 template<typename ParentT, typename BoundsT> class View;
