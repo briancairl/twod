@@ -35,12 +35,12 @@ struct GridTraits;
 
 /// Convenience cell type accessor, based on GridTraits
 template<typename GridT>
-using cell_t = typename GridTraits<GridT>::cell_type;
+using cell_t = typename GridTraits<std::remove_const_t<std::remove_reference_t<GridT>>>::cell_type;
 
 
 /// Convenience bounds type accessor, based on GridTraits
 template<typename GridT>
-using bounds_t = typename GridTraits<GridT>::bounds_type;
+using bounds_t = typename GridTraits<std::remove_const_t<std::remove_reference_t<GridT>>>::bounds_type;
 
 
 /**
@@ -332,6 +332,13 @@ protected:
 private:
   IMPLEMENT_CRTP_BASE_CLASS(GridBase, DerivedT);
 };
+
+
+/**
+ * @brief Utility struct used to test if an object is derived from GridBase
+ */
+template<typename GridT>
+struct is_grid : std::integral_constant<bool, std::is_base_of<GridBase<std::remove_reference_t<GridT>>, std::remove_reference_t<GridT>>::value> {};
 
 
 template<typename ViewIteratorT>
@@ -668,6 +675,17 @@ private:
 
   friend GridBaseType;
 };
+
+
+/**
+ * @brief Utility struct used to test if an object is a View
+ */
+template<typename ViewT>
+struct is_view : std::integral_constant<bool, false> {};
+
+
+template<typename ParentT, typename BoundsT>
+struct is_view<View<ParentT, BoundsT>> : std::integral_constant<bool, true> {};
 
 
 template<typename ParentT, typename BoundsT>
