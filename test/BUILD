@@ -11,6 +11,18 @@ cc_test(
 
 
 cc_test(
+    name="flood-fill-tests",
+    srcs=["flood_fill.cpp"],
+    copts=["-Iexternal/googletest/googletest/include"],
+    deps=[
+        "//:grid",
+        "@googletest//:gtest",
+    ],
+    timeout="short",
+)
+
+
+cc_test(
     name="grid-unit-tests",
     srcs=["grid.cpp"],
     copts=["-Iexternal/googletest/googletest/include"],
