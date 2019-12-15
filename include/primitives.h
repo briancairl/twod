@@ -34,8 +34,8 @@ protected:
   /// Grid extents
   constexpr static const Extents extents_{Height, Width};
 
-  template<typename OtherDerived> friend class BoundsBase;
-  template<typename OtherDerived, typename OtherCellT> friend class GridBase;
+  template<typename OtherDerivedT> friend class BoundsBase;
+  template<typename OtherDerivedT> friend class GridBase;
 };
 
 
@@ -61,8 +61,8 @@ protected:
   /// Grid extents
   Extents extents_;
 
-  template<typename OtherDerived> friend class BoundsBase;
-  template<typename OtherDerived, typename OtherCellT> friend class GridBase;
+  template<typename OtherDerivedT> friend class BoundsBase;
+  template<typename OtherDerivedT> friend class GridBase;
 };
 
 
@@ -85,8 +85,8 @@ protected:
   /// Origin location
   constexpr static const Indices origin_{X, Y};
 
-  template<typename OtherDerived> friend class BoundsBase;
-  template<typename OtherDerived, typename OtherCellT> friend class GridBase;
+  template<typename OtherDerivedT> friend class BoundsBase;
+  template<typename OtherDerivedT> friend class GridBase;
 };
 
 
@@ -112,8 +112,8 @@ protected:
   /// Origin location
   Indices origin_;
 
-  template<typename OtherDerived> friend class BoundsBase;
-  template<typename OtherDerived, typename OtherCellT> friend class GridBase;
+  template<typename OtherDerivedT> friend class BoundsBase;
+  template<typename OtherDerivedT> friend class GridBase;
 };
 
 
@@ -172,8 +172,7 @@ private:
     return data_.end();
   }
 
-  template<typename OtherDerived, typename OtherBoundsT>
-  friend class GridBase;
+  template<typename OtherDerivedT> friend class GridBase;
 };
 
 
@@ -250,8 +249,7 @@ private:
     return data_ + derived()->extents().area();
   }
 
-  template<typename OtherDerived, typename OtherBoundsT>
-  friend class GridBase;
+  template<typename OtherDerivedT> friend class GridBase;
 };
 
 }  // namespace twod

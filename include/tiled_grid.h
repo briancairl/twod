@@ -31,13 +31,12 @@ struct Tile
 
 template<typename CellT, int Height, int Width, int TileHeight = Height/2, int TileWidth=Width/2>
 class FixedTiledGrid :
-  public GridBase<FixedTiledGrid<CellT, Height, Width, TileHeight, TileWidth>,
-                  FixedOriginExtentsBounds<0, 0, Height, Width>>
+  public GridBase<FixedTiledGrid<CellT, Height, Width, TileHeight, TileWidth>>
 {
   static_assert(Height >= TileHeight, "FixedTiledGrid: invalid TileHeight");
   static_assert(Width >= TileWidth, "FixedTiledGrid: invalid TileWidth");
 
-  using GBase =  GridBase<FixedTiledGrid, FixedOriginExtentsBounds<0, 0, Height, Width>>;
+  using GridBaseType = GridBase<FixedTiledGrid>;
 public:
   constexpr static const int TileRows = Height / TileHeight;
   constexpr static const int TileCols = Width / TileWidth;
@@ -144,7 +143,7 @@ private:
   /// View used to iterate over FixedTiledGrid
   View<FixedTiledGrid, FixedOriginExtentsBounds<0, 0, Height, Width>> view_;
 
-  friend GBase;
+  friend GridBaseType;
 };
 
 
@@ -152,6 +151,7 @@ template<typename CellT, int Height, int Width, int TileHeight, int TileWidth>
 struct GridTraits<FixedTiledGrid<CellT, Height, Width, TileHeight, TileWidth>>
 {
   using cell_type = CellT;
+  using bounds_type = FixedOriginExtentsBounds<0, 0, Height, Width>;
 };
 
 }  // namespace twod
