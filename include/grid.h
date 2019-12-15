@@ -33,9 +33,14 @@ template<typename GridT>
 struct GridTraits;
 
 
-/// Convenience cell-type using template, based on GridTraits
+/// Convenience cell type accessor, based on GridTraits
 template<typename GridT>
 using cell_t = typename GridTraits<GridT>::cell_type;
+
+
+/// Convenience bounds type accessor, based on GridTraits
+template<typename GridT>
+using bounds_t = typename GridTraits<GridT>::bounds_type;
 
 
 /**
@@ -43,9 +48,10 @@ using cell_t = typename GridTraits<GridT>::cell_type;
  *
  * @tparam Derived  CRTP derived grid object
  */
-template<typename Derived, typename BoundsT>
-class GridBase : public BoundsT
+template<typename DerivedT>
+class GridBase : public bounds_t<DerivedT>
 {
+  using bounds_type = bounds_t<DerivedT>;
 public:
   /**
    * @brief Returns grid view of size \p extents
@@ -56,9 +62,9 @@ public:
    * @return view
    */
   template<typename ViewBoundsT>
-  inline View<Derived, ViewBoundsT> view(const ViewBoundsT& bounds)
+  inline View<DerivedT, ViewBoundsT> view(const ViewBoundsT& bounds)
   {
-    return View<Derived, ViewBoundsT>{*derived(), bounds};
+    return View<DerivedT, ViewBoundsT>{*derived(), bounds};
   }
 
   /**
@@ -70,9 +76,9 @@ public:
    * @return view
    */
   template<typename ViewBoundsT>
-  inline View<const Derived, ViewBoundsT> view(const ViewBoundsT& bounds) const
+  inline View<const DerivedT, ViewBoundsT> view(const ViewBoundsT& bounds) const
   {
-    return View<const Derived, ViewBoundsT>{*derived(), bounds};
+    return View<const DerivedT, ViewBoundsT>{*derived(), bounds};
   }
 
   /**
@@ -96,13 +102,13 @@ public:
   /**
    * @brief Generic assignment from <code>GridBase</code> derivative
    *
-   * @tparam OtherDerived  CRTP-derived <code>GridBase</code> object
+   * @tparam OtherDerivedT  CRTP-derived <code>GridBase</code> object
    *
    * @param other  other grid
    * @return <code>*this</code>
    */
-  template<typename OtherDerived, typename OtherBoundsT>
-  inline Derived& operator=(const GridBase<OtherDerived, OtherBoundsT>& other)
+  template<typename OtherDerivedT>
+  inline DerivedT& operator=(const GridBase<OtherDerivedT>& other)
   {
     std::copy(other.begin(), other.end(), this->begin());
     return *derived();
@@ -111,13 +117,13 @@ public:
   /**
    * @brief Compound cell-wise addition from <code>GridBase</code> derivative
    *
-   * @tparam OtherDerived  CRTP-derived <code>GridBase</code> object
+   * @tparam OtherDerivedT  CRTP-derived <code>GridBase</code> object
    *
    * @param other  other grid
    * @return <code>*this</code>
    */
-  template<typename OtherDerived>
-  inline Derived& operator+=(const GridBase<OtherDerived, BoundsT>& other)
+  template<typename OtherDerivedT>
+  inline DerivedT& operator+=(const GridBase<OtherDerivedT>& other)
   {
     auto this_itr = derived()->begin();
     for (auto other_itr = other.begin(); other_itr != other.end(); ++other_itr, ++this_itr)
@@ -130,13 +136,13 @@ public:
   /**
    * @brief Compound cell-wise subtraction from <code>GridBase</code> derivative
    *
-   * @tparam OtherDerived  CRTP-derived <code>GridBase</code> object
+   * @tparam OtherDerivedT  CRTP-derived <code>GridBase</code> object
    *
    * @param other  other grid
    * @return <code>*this</code>
    */
-  template<typename OtherDerived>
-  inline Derived& operator-=(const GridBase<OtherDerived, BoundsT>& other)
+  template<typename OtherDerivedT>
+  inline DerivedT& operator-=(const GridBase<OtherDerivedT>& other)
   {
     auto this_itr = derived()->begin();
     for (auto other_itr = other.begin(); other_itr != other.end(); ++other_itr, ++this_itr)
@@ -155,7 +161,7 @@ public:
    * @return <code>*this</code>
    */
   template<typename ScalarT>
-  inline Derived& operator*=(const ScalarT scale)
+  inline DerivedT& operator*=(const ScalarT scale)
   {
     for (auto& c : *derived())
     {
@@ -173,7 +179,7 @@ public:
    * @return <code>*this</code>
    */
   template<typename ScalarT>
-  inline Derived& operator/=(const ScalarT scale)
+  inline DerivedT& operator/=(const ScalarT scale)
   {
     for (auto& c : *derived())
     {
@@ -185,15 +191,15 @@ public:
   /**
    * @brief Cell wise inequality comparison <code>GridBase</code> derivative
    *
-   * @tparam OtherDerived  CRTP-derived <code>GridBase</code> object
+   * @tparam OtherDerivedT  CRTP-derived <code>GridBase</code> object
    *
    * @param other  other grid
    *
    * @retval true  if any cell of \p other is not equal to corresponding cell in <code>*this</code>
    * @retval false  otherwise
    */
-  template<typename OtherDerived>
-  inline bool operator!=(const GridBase<OtherDerived, BoundsT>& other) const
+  template<typename OtherDerivedT>
+  inline bool operator!=(const GridBase<OtherDerivedT>& other) const
   {
     // Compare grid extents, first
     if (this->extents() != other.extents())
@@ -208,15 +214,15 @@ public:
   /**
    * @brief Cell wise equality comparison <code>GridBase</code> derivative
    *
-   * @tparam OtherDerived  CRTP-derived <code>GridBase</code> object
+   * @tparam OtherDerivedT  CRTP-derived <code>GridBase</code> object
    *
    * @param other  other grid
    *
    * @retval true  if all cells of \p other are equal to corresponding cells in <code>*this</code>
    * @retval false  otherwise
    */
-  template<typename OtherDerived>
-  inline bool operator==(const GridBase<OtherDerived, BoundsT>& other) const
+  template<typename OtherDerivedT>
+  inline bool operator==(const GridBase<OtherDerivedT>& other) const
   {
     return not this->operator!=(other);
   }
@@ -227,7 +233,7 @@ public:
    * @return <code>*this</code>
    */
   template<typename AssignT>
-  inline Derived& fill(const AssignT& value)
+  inline DerivedT& fill(const AssignT& value)
   {
     for (auto& c : *derived())
     {
@@ -239,9 +245,9 @@ public:
   /**
    * @brief Returns grid bounds
    */
-  constexpr const BoundsT& bounds() const
+  constexpr const bounds_type& bounds() const
   {
-    return static_cast<const BoundsT&>(*this);
+    return static_cast<const bounds_type&>(*this);
   }
 
   /**
@@ -315,16 +321,16 @@ public:
 protected:
   template<typename... Args>
   explicit GridBase(Args&&... args) :
-    BoundsT{std::forward<Args>(args)...}
+    bounds_type{std::forward<Args>(args)...}
   {}
 
   inline void set_extents(const Extents& extents)
   {
-    BoundsT::set_extents(extents);
+    bounds_type::set_extents(extents);
   }
 
 private:
-  IMPLEMENT_CRTP_BASE_CLASS(GridBase, Derived);
+  IMPLEMENT_CRTP_BASE_CLASS(GridBase, DerivedT);
 };
 
 
@@ -597,18 +603,18 @@ private:
 
 
 template<typename ParentT, typename BoundsT>
-class View : public GridBase<View<ParentT, BoundsT>, BoundsT>
+class View : public GridBase<View<ParentT, BoundsT>>
 {
-  using GBase = GridBase<View<ParentT, BoundsT>, BoundsT>;
+  using GridBaseType = GridBase<View<ParentT, BoundsT>>;
 public:
-  using GBase::operator=;
+  using GridBaseType::operator=;
 
   View(ParentT& parent) :
     parent_{std::addressof(parent)}
   {}
 
   View(ParentT& parent, BoundsT bounds) :
-    GBase{bounds},
+    GridBaseType{bounds},
     parent_{std::addressof(parent)}
   {}
 
@@ -660,53 +666,57 @@ private:
   /// Pointer to parent grid being viewed
   ParentT* parent_;
 
-  friend GBase;
+  friend GridBaseType;
 };
 
 
 template<typename ParentT, typename BoundsT>
-struct GridTraits<View<ParentT, BoundsT>> : GridTraits<ParentT> {};
+struct GridTraits<View<ParentT, BoundsT>>
+{
+  using cell_type = cell_t<std::remove_cv_t<ParentT>>;
+  using bounds_type = BoundsT;
+};
 
 
 template<typename CellT,
          typename AllocatorT = std::allocator<CellT>>
 class Grid :
-  public GridBase<Grid<CellT, AllocatorT>, FixedOriginBounds<0, 0>>,
+  public GridBase<Grid<CellT, AllocatorT>>,
   public RawAccessBase<Grid<CellT, AllocatorT>, CellT*>
 {
-  using GBase = GridBase<Grid, FixedOriginBounds<0, 0>>;
-  using StorageBase = RawAccessBase<Grid, CellT*>;
+  using GridBaseType = GridBase<Grid>;
+  using StorageBaseType = RawAccessBase<Grid, CellT*>;
 public:
   Grid() :
-    GBase{Extents::Zero()},
-    StorageBase{nullptr}
+    GridBaseType{Extents::Zero()},
+    StorageBaseType{nullptr}
   {}
 
   explicit Grid(const Extents& extents) :
-    GBase{extents},
-    StorageBase{allocator_.allocate(extents.area())}
+    GridBaseType{extents},
+    StorageBaseType{allocator_.allocate(extents.area())}
   {
     construct();
   }
 
   Grid(const Extents& extents, const CellT& val) :
-    GBase{extents},
-    StorageBase{allocator_.allocate(extents.area())}
+    GridBaseType{extents},
+    StorageBaseType{allocator_.allocate(extents.area())}
   {
     construct(val);
   }
 
   Grid(const Extents& extents, const AllocatorT& alloc) :
-    GBase{extents},
-    StorageBase{alloc.allocate(extents.area())},
+    GridBaseType{extents},
+    StorageBaseType{alloc.allocate(extents.area())},
     allocator_{alloc}
   {
     construct();
   }
 
   Grid(const Extents& extents, const CellT& val, const AllocatorT& alloc) :
-    GBase{extents},
-    StorageBase{alloc.allocate(extents.area())},
+    GridBaseType{extents},
+    StorageBaseType{alloc.allocate(extents.area())},
     allocator_{alloc}
   {
     construct(val);
@@ -746,7 +756,7 @@ public:
 
     // Reset data pointer and extents
     Grid::data_ = nullptr;
-    GBase::set_extents(Extents::Zero());
+    GridBaseType::set_extents(Extents::Zero());
   }
 
   inline void resize(const Extents& extents, const CellT& value)
@@ -762,7 +772,7 @@ public:
     else
     {
       Grid::clear();
-      GBase::set_extents(extents);
+      GridBaseType::set_extents(extents);
       Grid::data_ = allocator_.allocate(extents.area());
       Grid::construct(value);
     }
@@ -781,7 +791,7 @@ public:
     else
     {
       Grid::clear();
-      GBase::set_extents(extents);
+      GridBaseType::set_extents(extents);
       Grid::data_ = allocator_.allocate(extents.area());
       Grid::construct();
     }
@@ -789,7 +799,7 @@ public:
 
   inline Grid& operator=(Grid&& other)
   {
-    GBase::set_extents(other.extents());
+    GridBaseType::set_extents(other.extents());
     Grid::data_ = other.data_;
     other.data_ = nullptr;
     other.set_extents(Extents::Zero());
@@ -811,7 +821,7 @@ public:
   }
 
 private:
-  friend StorageBase;
+  friend StorageBaseType;
 
   template<typename... CellArgs>
   inline void construct(CellArgs&&... cell_args)
@@ -838,32 +848,33 @@ template<typename CellT, typename AllocatorT>
 struct GridTraits<Grid<CellT, AllocatorT>>
 {
   using cell_type = CellT;
+  using bounds_type = FixedOriginBounds<0, 0>;
 };
 
 
 template<typename CellT>
 class MappedGrid :
-  public GridBase<MappedGrid<CellT>, FixedOriginBounds<0, 0>>,
+  public GridBase<MappedGrid<CellT>>,
   public RawAccessBase<MappedGrid<CellT>, CellT*>
 {
-  using GBase = GridBase<MappedGrid, FixedOriginBounds<0, 0>>;
-  using StorageBase = RawAccessBase<MappedGrid, CellT*>;
+  using GridBaseType = GridBase<MappedGrid>;
+  using StorageBaseType = RawAccessBase<MappedGrid, CellT*>;
 public:
   MappedGrid(MappedGrid&&) = delete;
 
   MappedGrid(const MappedGrid& other) :
-    GBase{other.extents()},
-    StorageBase{other.data_}
+    GridBaseType{other.extents()},
+    StorageBaseType{other.data_}
   {}
 
   MappedGrid(const Extents& extents, CellT* mem) :
-    GBase{extents},
-    StorageBase{mem}
+    GridBaseType{extents},
+    StorageBaseType{mem}
   {}
 
   inline MappedGrid& operator=(const MappedGrid& other)
   {
-    GBase::set_extents(other.extents());
+    GridBaseType::set_extents(other.extents());
     this->data_ = other.data_;
     return *this;
   }
@@ -876,8 +887,8 @@ private:
     MappedGrid::set_extents(tmp_extents);
   }
 
-  friend GBase;
-  friend StorageBase;
+  friend GridBaseType;
+  friend StorageBaseType;
 };
 
 
@@ -885,18 +896,19 @@ template<typename CellT>
 struct GridTraits<MappedGrid<CellT>>
 {
   using cell_type = CellT;
+  using bounds_type = FixedOriginBounds<0, 0>;
 };
 
 
 template<typename CellT, int Height, int Width>
 class FixedGrid :
-  public GridBase<FixedGrid<CellT, Height, Width>, FixedOriginExtentsBounds<0, 0, Height, Width>>,
+  public GridBase<FixedGrid<CellT, Height, Width>>,
   public ContainerAccessBase<FixedGrid<CellT, Height, Width>, std::array<CellT, Height * Width>>
 {
-  using GBase = GridBase<FixedGrid, FixedOriginExtentsBounds<0, 0, Height, Width>>;
-  using StorageBase = ContainerAccessBase<FixedGrid, std::array<CellT, Height * Width>>;
+  using GridBaseType = GridBase<FixedGrid>;
+  using StorageBaseType = ContainerAccessBase<FixedGrid, std::array<CellT, Height * Width>>;
 public:
-  using GBase::operator=;
+  using GridBaseType::operator=;
 
   FixedGrid() = default;
 
@@ -911,24 +923,25 @@ template<typename CellT, int Height, int Width>
 struct GridTraits<FixedGrid<CellT, Height, Width>>
 {
   using cell_type = CellT;
+  using bounds_type = FixedOriginExtentsBounds<0, 0, Height, Width>;
 };
 
 
 template<typename CellT, int Height, int Width>
 class FixedMappedGrid :
-  public GridBase<FixedMappedGrid<CellT, Height, Width>, FixedOriginExtentsBounds<0, 0, Height, Width>>,
+  public GridBase<FixedMappedGrid<CellT, Height, Width>>,
   public RawAccessBase<FixedMappedGrid<CellT, Height, Width>, CellT*>
 {
-  using GBase = GridBase<FixedMappedGrid, FixedOriginExtentsBounds<0, 0, Height, Width>>;
-  using StorageBase = RawAccessBase<FixedMappedGrid, CellT*>;
+  using GridBaseType = GridBase<FixedMappedGrid>;
+  using StorageBaseType = RawAccessBase<FixedMappedGrid, CellT*>;
 public:
-  using GBase::operator=;
+  using GridBaseType::operator=;
 
   explicit FixedMappedGrid(CellT* mem) :
-    StorageBase{mem}
+    StorageBaseType{mem}
   {}
 
-  friend GBase;
+  friend GridBaseType;
 };
 
 
@@ -936,6 +949,7 @@ template<typename CellT, int Height, int Width>
 struct GridTraits<FixedMappedGrid<CellT, Height, Width>>
 {
   using cell_type = CellT;
+  using bounds_type = FixedOriginExtentsBounds<0, 0, Height, Width>;
 };
 
 }  // namespace twod

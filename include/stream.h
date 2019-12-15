@@ -33,13 +33,13 @@ inline std::ostream& operator<<(std::ostream& os, const BoundsBase<BoundsT>& bou
 }
 
 
-template<typename Derived, typename CellT>
-inline std::ostream& operator<<(std::ostream& os, const GridBase<Derived, CellT>& grid)
+template<typename DerivedT>
+inline std::ostream& operator<<(std::ostream& os, const GridBase<DerivedT>& grid)
 {
-  using Base = const GridBase<Derived, CellT>;
+  using GridBaseType = const GridBase<DerivedT>;
 
   int new_line_count = 0;
-  for (auto itr = RowViewIterator<Base>{grid}; itr != ViewIteratorEnd{}; ++itr)
+  for (auto itr = RowViewIterator<GridBaseType>{grid}; itr != ViewIteratorEnd{}; ++itr)
   {
     os << std::setprecision(4) << std::setw(6) << *itr;
     if (++new_line_count == grid.extents().y)
