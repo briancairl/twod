@@ -68,6 +68,14 @@ public:
   }
 
   /**
+   * @brief Returns bottom corner index
+   */
+  constexpr Extents bottom() const
+  {
+    return origin() + extents();
+  }
+
+  /**
    * @brief Check if grid (effectively) contains no values
    */
   constexpr bool empty() const
@@ -98,6 +106,21 @@ public:
   {
     return (this->origin() - other.origin()).abs().all_le(this->extents() +
                                                           other.extents());
+  }
+
+  /**
+   * @brief Check if bounds lie within other bounds
+   *
+   * @param other  other bounds object
+   *
+   * @retval true  if within <code>other</code>
+   * @retval false  otherwise
+   */
+  template<typename OtherDerived>
+  constexpr bool within(const BoundsBase<OtherDerived>& other) const
+  {
+    return this->origin().all_ge(other.origin()) and
+           this->bottom().all_le(other.bottom());
   }
 
 private:

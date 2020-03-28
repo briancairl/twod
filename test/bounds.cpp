@@ -89,6 +89,56 @@ TEST(FixedOriginExtentsBounds, Within)
 }
 
 
+TEST(FixedExtentsBounds, BoundsWithinNoEdges)
+{
+  const FixedOriginExtentsBounds<1, 1, 5, 5> small_bounds;
+  const FixedOriginExtentsBounds<0, 0, 20, 20> big_bounds;
+
+  ASSERT_TRUE(small_bounds.within(big_bounds));
+  ASSERT_FALSE(big_bounds.within(small_bounds));
+}
+
+
+TEST(FixedExtentsBounds, BoundsWithinOutsideTop)
+{
+  const FixedOriginExtentsBounds<-1, -1, 5, 5> small_bounds;
+  const FixedOriginExtentsBounds<0, 0, 20, 20> big_bounds;
+
+  ASSERT_FALSE(small_bounds.within(big_bounds));
+  ASSERT_FALSE(big_bounds.within(small_bounds));
+}
+
+
+TEST(FixedExtentsBounds, BoundsWithinOutsideBottom)
+{
+  const FixedOriginExtentsBounds<16, 16, 5, 5> small_bounds;
+  const FixedOriginExtentsBounds<0, 0, 20, 20> big_bounds;
+
+  ASSERT_FALSE(small_bounds.within(big_bounds));
+  ASSERT_FALSE(big_bounds.within(small_bounds));
+}
+
+
+TEST(FixedExtentsBounds, BoundsWithinInsideTopEdge)
+{
+  const FixedOriginExtentsBounds<0, 0, 5, 5> small_bounds;
+  const FixedOriginExtentsBounds<0, 0, 20, 20> big_bounds;
+
+  ASSERT_TRUE(small_bounds.within(big_bounds));
+  ASSERT_FALSE(big_bounds.within(small_bounds));
+}
+
+
+TEST(FixedExtentsBounds, BoundsWithinInsideBottomEdge)
+{
+  const FixedOriginExtentsBounds<15, 15, 5, 5> small_bounds;
+  const FixedOriginExtentsBounds<0, 0, 20, 20> big_bounds;
+
+  ASSERT_TRUE(small_bounds.within(big_bounds));
+  ASSERT_FALSE(big_bounds.within(small_bounds));
+}
+
+
 TEST(ColBoundsIterator, AllWithin)
 {
   const FixedOriginExtentsBounds<1, 1, 5, 5> bounds;
@@ -115,6 +165,7 @@ TEST(RowBoundsIterator, AllWithin)
   }
   ASSERT_EQ(count, bounds.extents().area());
 }
+
 
 
 int main(int argc, char **argv)
