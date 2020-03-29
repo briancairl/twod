@@ -94,8 +94,8 @@ TEST(FixedExtentsBounds, BoundsWithinNoEdges)
   const FixedOriginExtentsBounds<1, 1, 5, 5> small_bounds;
   const FixedOriginExtentsBounds<0, 0, 20, 20> big_bounds;
 
-  ASSERT_TRUE(small_bounds.within(big_bounds));
-  ASSERT_FALSE(big_bounds.within(small_bounds));
+  ASSERT_FALSE(small_bounds.within(big_bounds));
+  ASSERT_TRUE(big_bounds.within(small_bounds));
 }
 
 
@@ -124,8 +124,8 @@ TEST(FixedExtentsBounds, BoundsWithinInsideTopEdge)
   const FixedOriginExtentsBounds<0, 0, 5, 5> small_bounds;
   const FixedOriginExtentsBounds<0, 0, 20, 20> big_bounds;
 
-  ASSERT_TRUE(small_bounds.within(big_bounds));
-  ASSERT_FALSE(big_bounds.within(small_bounds));
+  ASSERT_FALSE(small_bounds.within(big_bounds));
+  ASSERT_TRUE(big_bounds.within(small_bounds));
 }
 
 
@@ -134,8 +134,8 @@ TEST(FixedExtentsBounds, BoundsWithinInsideBottomEdge)
   const FixedOriginExtentsBounds<15, 15, 5, 5> small_bounds;
   const FixedOriginExtentsBounds<0, 0, 20, 20> big_bounds;
 
-  ASSERT_TRUE(small_bounds.within(big_bounds));
-  ASSERT_FALSE(big_bounds.within(small_bounds));
+  ASSERT_FALSE(small_bounds.within(big_bounds));
+  ASSERT_TRUE(big_bounds.within(small_bounds));
 }
 
 

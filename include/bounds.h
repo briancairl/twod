@@ -109,7 +109,7 @@ public:
   }
 
   /**
-   * @brief Check if bounds lie within other bounds
+   * @brief Check if bounds of this object lie within other bounds
    *
    * @param other  other bounds object
    *
@@ -119,8 +119,8 @@ public:
   template<typename OtherDerived>
   constexpr bool within(const BoundsBase<OtherDerived>& other) const
   {
-    return this->origin().all_ge(other.origin()) and
-           this->bottom().all_le(other.bottom());
+    return other.origin().all_ge(this->origin()) and
+           other.bottom().all_le(this->bottom());
   }
 
 private:
