@@ -202,6 +202,17 @@ TEST(Intersection, NonOverlapping)
 }
 
 
+TEST(Intersection, OperatorOverload)
+{
+  const FixedOriginExtentsBounds<1, 1, 5, 5> small_bounds;
+  const FixedOriginExtentsBounds<0, 0, 20, 20> big_bounds;
+
+  const auto result = small_bounds & big_bounds;
+
+  ASSERT_EQ(result, small_bounds);
+}
+
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);

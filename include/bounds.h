@@ -493,6 +493,21 @@ inline Bounds intersection(const BoundsBase<LBoundsT>& lhs, const BoundsBase<RBo
   return Bounds{origin, extents};
 }
 
+
+/**
+ * @brief Computes intersection region between two bounds
+ *
+ * @param lhs  first bounds object
+ * @param rhs  first bounds object
+ *
+ * @return bounds representing region of intersection between two bounds
+ */
+template<typename LBoundsT, typename RBoundsT>
+inline Bounds operator&(const BoundsBase<LBoundsT>& lhs, const BoundsBase<RBoundsT>& rhs)
+{
+  return intersection(lhs, rhs);
+}
+
 }  // namespace twod
 
 #endif // TWOD_BOUNDS_H
