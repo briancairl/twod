@@ -20,7 +20,7 @@ namespace twod
 {
 
 /**
- * @brief
+ * @brief CRTP bounds base type
  */
 template<typename Derived>
 class BoundsBase
@@ -113,7 +113,7 @@ public:
    *
    * @param other  other bounds object
    *
-   * @retval true  if within <code>other</code>
+   * @retval true  if <code>other</code> is within this
    * @retval false  otherwise
    */
   template<typename OtherDerived>
@@ -465,6 +465,32 @@ inline BoundsIteratorRange<RowBoundsIterator<BoundsT>>
   make_row_bounds_range(const BoundsBase<BoundsT>& bounds)
 {
   return BoundsIteratorRange<RowBoundsIterator<BoundsT>>{bounds};
+}
+
+/**
+ * @brief Computes intersection region between two bounds
+ *
+ * @param lhs  first bounds object
+ * @param rhs  first bounds object
+ *
+ * @return bounds representing region of intersection between two bounds
+ */
+template<typename LBoundsT, typename RBoundsT>
+inline Bounds intersection(const BoundsBase<LBoundsT>& lhs, const BoundsBase<RBoundsT>& rhs)
+{
+  const auto lhs_t = lhs.origin();
+  const auto lhs_b = lhs.bottom();
+
+  const auto rhs_t = rhs.origin();
+  const auto rhs_b = rhs.bottom();
+
+  const auto b_x = std::min(rhs_b.x, lhs_b.x);
+  const auto b_y = std::min(rhs_b.y, lhs_b.y);
+
+  const Indices origin{std::max(lhs_t.x, rhs_t.x), std::max(lhs_t.y, rhs_t.y)};
+  const Extents extents{std::max(0, b_x - origin.x), std::max(0, b_y - origin.y)};
+
+  return Bounds{origin, extents};
 }
 
 }  // namespace twod

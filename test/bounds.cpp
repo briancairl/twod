@@ -167,6 +167,40 @@ TEST(RowBoundsIterator, AllWithin)
 }
 
 
+TEST(Intersection, OverlappingContaining)
+{
+  const FixedOriginExtentsBounds<1, 1, 5, 5> small_bounds;
+  const FixedOriginExtentsBounds<0, 0, 20, 20> big_bounds;
+
+  const auto result = intersection(small_bounds, big_bounds);
+
+  ASSERT_EQ(result, small_bounds);
+}
+
+
+TEST(Intersection, OverlappingPoint)
+{
+  const FixedOriginExtentsBounds<0, 0, 5, 5> small_bounds;
+  const FixedOriginExtentsBounds<5, 5, 20, 20> big_bounds;
+
+  const auto result = intersection(small_bounds, big_bounds);
+  constexpr FixedOriginExtentsBounds<5, 5, 0, 0> expected;
+
+  ASSERT_EQ(result, expected);
+}
+
+
+TEST(Intersection, NonOverlapping)
+{
+  const FixedOriginExtentsBounds<0, 0, 5, 5> small_bounds;
+  const FixedOriginExtentsBounds<6, 6, 20, 20> big_bounds;
+
+  const auto result = intersection(small_bounds, big_bounds);
+  constexpr FixedOriginExtentsBounds<6, 6, 0, 0> expected;
+
+  ASSERT_EQ(result, expected);
+}
+
 
 int main(int argc, char **argv)
 {
