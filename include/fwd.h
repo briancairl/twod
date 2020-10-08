@@ -20,6 +20,7 @@ template <typename DerivedT> class BoundsBase;
 template <typename ViewT> class ColViewIterator;
 template <typename ViewT> class RowViewIterator;
 template <typename ParentT, typename BoundsT> class View;
+class ViewIteratorEnd;
 
 }  // namespace twod
 
