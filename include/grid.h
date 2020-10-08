@@ -14,12 +14,10 @@
 #include <type_traits>
 #include <utility>
 
-// CRTP
-#include <crtp/crtp.h>
-
 // TwoD
 #include <twod/bounds.h>
 #include <twod/coordinates.h>
+#include <twod/crtp.h>
 #include <twod/fwd.h>
 #include <twod/primitives.h>
 
@@ -29,17 +27,16 @@ namespace twod
 /**
  * @brief Grid type traits helper type
  */
-template<typename GridT>
-struct GridTraits;
+template <typename GridT> struct GridTraits;
 
 
 /// Convenience cell type accessor, based on GridTraits
-template<typename GridT>
+template <typename GridT>
 using cell_t = typename GridTraits<std::remove_const_t<std::remove_reference_t<GridT>>>::cell_type;
 
 
 /// Convenience bounds type accessor, based on GridTraits
-template<typename GridT>
+template <typename GridT>
 using bounds_t = typename GridTraits<std::remove_const_t<std::remove_reference_t<GridT>>>::bounds_type;
 
 
@@ -48,10 +45,10 @@ using bounds_t = typename GridTraits<std::remove_const_t<std::remove_reference_t
  *
  * @tparam Derived  CRTP derived grid object
  */
-template<typename DerivedT>
-class GridBase : public bounds_t<DerivedT>
+template <typename DerivedT> class GridBase : public bounds_t<DerivedT>
 {
   using bounds_type = bounds_t<DerivedT>;
+
 public:
   /**
    * @brief Returns grid view of size \p extents
@@ -61,8 +58,7 @@ public:
    * @param bounds
    * @return view
    */
-  template<typename ViewBoundsT>
-  inline View<DerivedT, ViewBoundsT> view(const ViewBoundsT& bounds)
+  template <typename ViewBoundsT> inline View<DerivedT, ViewBoundsT> view(const ViewBoundsT& bounds)
   {
     return View<DerivedT, ViewBoundsT>{*derived(), bounds};
   }
@@ -75,8 +71,7 @@ public:
    * @param bounds
    * @return view
    */
-  template<typename ViewBoundsT>
-  inline View<const DerivedT, ViewBoundsT> view(const ViewBoundsT& bounds) const
+  template <typename ViewBoundsT> inline View<const DerivedT, ViewBoundsT> view(const ViewBoundsT& bounds) const
   {
     return View<const DerivedT, ViewBoundsT>{*derived(), bounds};
   }
@@ -85,19 +80,13 @@ public:
    * @brief Returns view for the entirety of the current grid
    * @return view
    */
-  inline auto view()
-  {
-    return view(bounds());
-  }
+  inline auto view() { return view(bounds()); }
 
   /**
    * @brief Returns view for the entirety of the current grid
    * @return view
    */
-  inline auto view() const
-  {
-    return view(bounds());
-  }
+  inline auto view() const { return view(bounds()); }
 
   /**
    * @brief Generic assignment from <code>GridBase</code> derivative
@@ -107,8 +96,7 @@ public:
    * @param other  other grid
    * @return <code>*this</code>
    */
-  template<typename OtherDerivedT>
-  inline DerivedT& operator=(const GridBase<OtherDerivedT>& other)
+  template <typename OtherDerivedT> inline DerivedT& operator=(const GridBase<OtherDerivedT>& other)
   {
     std::copy(other.begin(), other.end(), this->begin());
     return *derived();
@@ -122,8 +110,7 @@ public:
    * @param other  other grid
    * @return <code>*this</code>
    */
-  template<typename OtherDerivedT>
-  inline DerivedT& operator+=(const GridBase<OtherDerivedT>& other)
+  template <typename OtherDerivedT> inline DerivedT& operator+=(const GridBase<OtherDerivedT>& other)
   {
     auto this_itr = derived()->begin();
     for (auto other_itr = other.begin(); other_itr != other.end(); ++other_itr, ++this_itr)
@@ -141,8 +128,7 @@ public:
    * @param other  other grid
    * @return <code>*this</code>
    */
-  template<typename OtherDerivedT>
-  inline DerivedT& operator-=(const GridBase<OtherDerivedT>& other)
+  template <typename OtherDerivedT> inline DerivedT& operator-=(const GridBase<OtherDerivedT>& other)
   {
     auto this_itr = derived()->begin();
     for (auto other_itr = other.begin(); other_itr != other.end(); ++other_itr, ++this_itr)
@@ -160,8 +146,7 @@ public:
    * @param scale  scaling value
    * @return <code>*this</code>
    */
-  template<typename ScalarT>
-  inline DerivedT& operator*=(const ScalarT scale)
+  template <typename ScalarT> inline DerivedT& operator*=(const ScalarT scale)
   {
     for (auto& c : *derived())
     {
@@ -178,8 +163,7 @@ public:
    * @param scale  scaling value
    * @return <code>*this</code>
    */
-  template<typename ScalarT>
-  inline DerivedT& operator/=(const ScalarT scale)
+  template <typename ScalarT> inline DerivedT& operator/=(const ScalarT scale)
   {
     for (auto& c : *derived())
     {
@@ -198,8 +182,7 @@ public:
    * @retval true  if any cell of \p other is not equal to corresponding cell in <code>*this</code>
    * @retval false  otherwise
    */
-  template<typename OtherDerivedT>
-  inline bool operator!=(const GridBase<OtherDerivedT>& other) const
+  template <typename OtherDerivedT> inline bool operator!=(const GridBase<OtherDerivedT>& other) const
   {
     // Compare grid extents, first
     if (this->extents() != other.extents())
@@ -221,8 +204,7 @@ public:
    * @retval true  if all cells of \p other are equal to corresponding cells in <code>*this</code>
    * @retval false  otherwise
    */
-  template<typename OtherDerivedT>
-  inline bool operator==(const GridBase<OtherDerivedT>& other) const
+  template <typename OtherDerivedT> inline bool operator==(const GridBase<OtherDerivedT>& other) const
   {
     return not this->operator!=(other);
   }
@@ -232,8 +214,7 @@ public:
    * @param value  cell value
    * @return <code>*this</code>
    */
-  template<typename AssignT>
-  inline DerivedT& fill(const AssignT& value)
+  template <typename AssignT> inline DerivedT& fill(const AssignT& value)
   {
     for (auto& c : *derived())
     {
@@ -245,89 +226,56 @@ public:
   /**
    * @brief Returns grid bounds
    */
-  constexpr const bounds_type& bounds() const
-  {
-    return static_cast<const bounds_type&>(*this);
-  }
+  constexpr const bounds_type& bounds() const { return static_cast<const bounds_type&>(*this); }
 
   /**
    * @brief Return mutable reference to element
    * @param pt  index pair associated with grid element
    * @return reference to cell
    */
-  constexpr auto& operator[](const Indices& pt)
-  {
-    return derived()->access_impl(pt + this->origin());
-  }
+  constexpr auto& operator[](const Indices& pt) { return derived()->access_impl(pt + this->origin()); }
 
   /**
    * @brief Return immutable reference to element
    * @param pt  index pair associated with grid element
    * @return reference to cell
    */
-  constexpr const auto& operator[](const Indices& pt) const
-  {
-    return derived()->access_impl(pt + this->origin());
-  }
+  constexpr const auto& operator[](const Indices& pt) const { return derived()->access_impl(pt + this->origin()); }
 
   /**
    * @brief Returns iterator (mutable) to first element
    */
-  inline auto begin()
-  {
-    return derived()->begin_impl();
-  }
+  inline auto begin() { return derived()->begin_impl(); }
 
   /**
    * @brief Returns iterator (mutable) to one past last element
    */
-  inline auto end()
-  {
-    return derived()->end_impl();
-  }
+  inline auto end() { return derived()->end_impl(); }
 
   /**
    * @brief Returns iterator (immutable) to first element
    */
-  inline auto begin() const
-  {
-    return derived()->begin_impl();
-  }
+  inline auto begin() const { return derived()->begin_impl(); }
 
   /**
    * @brief Returns iterator (immutable) to one past last element
    */
-  inline auto end() const
-  {
-    return derived()->end_impl();
-  }
+  inline auto end() const { return derived()->end_impl(); }
 
   /**
    * @brief Returns iterator (immutable) to first element
    */
-  inline auto cbegin() const
-  {
-    return derived()->begin_impl();
-  }
+  inline auto cbegin() const { return derived()->begin_impl(); }
 
   /**
    * @brief Returns iterator (immutable) to one past last element
    */
-  inline auto cend() const
-  {
-    return derived()->end_impl();
-  }
+  inline auto cend() const { return derived()->end_impl(); }
 
 protected:
-  template<typename... Args>
-  explicit GridBase(Args&&... args) :
-    bounds_type{std::forward<Args>(args)...}
-  {}
+  template <typename... Args> explicit GridBase(Args&&... args) : bounds_type{std::forward<Args>(args)...} {}
 
-  inline void set_extents(const Extents& extents)
-  {
-    bounds_type::set_extents(extents);
-  }
+  inline void set_extents(const Extents& extents) { bounds_type::set_extents(extents); }
 
 private:
   IMPLEMENT_CRTP_BASE_CLASS(GridBase, DerivedT);
@@ -337,36 +285,34 @@ private:
 /**
  * @brief Utility struct used to test if an object is derived from GridBase
  */
-template<typename GridT>
-struct is_grid : std::integral_constant<bool, std::is_base_of<GridBase<std::remove_reference_t<GridT>>, std::remove_reference_t<GridT>>::value> {};
+template <typename GridT>
+struct is_grid : std::integral_constant<
+                   bool,
+                   std::is_base_of<GridBase<std::remove_reference_t<GridT>>, std::remove_reference_t<GridT>>::value>
+{};
 
 
-template<typename ViewIteratorT>
-struct ViewIteratorTraits;
+template <typename ViewIteratorT> struct ViewIteratorTraits;
 
 
-template<typename ViewIteratorT>
-using view_t = typename ViewIteratorTraits<ViewIteratorT>::ViewType;
+template <typename ViewIteratorT> using view_t = typename ViewIteratorTraits<ViewIteratorT>::ViewType;
 
 
 /// End-tag object
-struct ViewIteratorEnd {};
+struct ViewIteratorEnd
+{};
 
 
 /**
  * @brief View iterator
  */
-template<typename DerivedT>
-class ViewIteratorBase
+template <typename DerivedT> class ViewIteratorBase
 {
 public:
   /**
    * @brief Pre-increment overload
    */
-  inline DerivedT& operator++()
-  {
-    return derived()->increment_impl();
-  }
+  inline DerivedT& operator++() { return derived()->increment_impl(); }
   /**
    * @brief Post-increment overload
    */
@@ -380,83 +326,55 @@ public:
   /**
    * @brief Mutable cell value dereference operator
    */
-  inline auto& operator*()
-  {
-    return view_->operator[](this->pt_);
-  }
+  inline auto& operator*() { return view_->operator[](this->pt_); }
 
   /**
    * @brief Immutable cell value dereference operator
    */
-  inline const auto& operator*() const
-  {
-    return view_->operator[](this->pt_);
-  }
+  inline const auto& operator*() const { return view_->operator[](this->pt_); }
 
   /**
    * @brief Mutable cell value dereference operator
    */
-  inline auto* operator->()
-  {
-    return std::addressof(this->operator*());
-  }
+  inline auto* operator-> () { return std::addressof(this->operator*()); }
 
   /**
    * @brief Immutable cell value dereference operator
    */
-  inline const auto* operator->() const
-  {
-    return std::addressof(this->operator*());
-  }
+  inline const auto* operator-> () const { return std::addressof(this->operator*()); }
 
   /**
    * @brief Equality operator
    */
   inline bool operator==(const DerivedT& other) const
   {
-    return (this->view_ == other.view_) and
-           (this->pt_ == other.pt_);
+    return (this->view_ == other.view_) and (this->pt_ == other.pt_);
   }
 
   /**
    * @brief Inequality operator
    */
-  inline bool operator!=(const DerivedT& other) const
-  {
-    return !this->operator==(other);
-  }
+  inline bool operator!=(const DerivedT& other) const { return !this->operator==(other); }
 
   /**
    * @brief Equality operator
    */
-  inline bool operator==(ViewIteratorEnd end) const
-  {
-    return derived()->eq_end_impl(end);
-  }
+  inline bool operator==(ViewIteratorEnd end) const { return derived()->eq_end_impl(end); }
 
   /**
    * @brief Inequality operator
    */
-  inline bool operator!=(ViewIteratorEnd end) const
-  {
-    return !this->operator==(end);
-  }
+  inline bool operator!=(ViewIteratorEnd end) const { return !this->operator==(end); }
 
   /**
    * @brief Returns active view-relative index pair associated with iterator
    */
-  const Indices& coords() const
-  {
-    return pt_;
-  }
+  const Indices& coords() const { return pt_; }
 
   /**
    * @brief Returns pointer to parent view
    */
-  const view_t<DerivedT>* const view() const
-  {
-    return view_;
-  }
+  const view_t<DerivedT>* const view() const { return view_; }
 
 protected:
   /**
@@ -464,10 +382,7 @@ protected:
    * @param view  parent grid view
    * @param pt  initial view-relative point
    */
-  ViewIteratorBase(view_t<DerivedT>* const view, const Indices& pt) :
-    view_{view},
-    pt_{pt}
-  {}
+  ViewIteratorBase(view_t<DerivedT>* const view, const Indices& pt) : view_{view}, pt_{pt} {}
 
   /// Parent grid pointer
   view_t<DerivedT>* view_;
@@ -475,16 +390,15 @@ protected:
   /// View-relative index
   Indices pt_;
 
-  template<typename OtherViewT> friend class ColViewIterator;
-  template<typename OtherViewT> friend class RowViewIterator;
+  template <typename OtherViewT> friend class ColViewIterator;
+  template <typename OtherViewT> friend class RowViewIterator;
 
 private:
   IMPLEMENT_CRTP_BASE_CLASS(ViewIteratorBase, DerivedT);
 };
 
 
-template<typename ViewT>
-struct ViewIteratorTraits<ColViewIterator<ViewT>>
+template <typename ViewT> struct ViewIteratorTraits<ColViewIterator<ViewT>>
 {
   using ViewType = ViewT;
 };
@@ -495,28 +409,24 @@ struct ViewIteratorTraits<ColViewIterator<ViewT>>
  *
  * @tparam GridT  parent grid type
  */
-template<typename ViewT>
-class ColViewIterator :
-  public ViewIteratorBase<ColViewIterator<ViewT>>
+template <typename ViewT> class ColViewIterator : public ViewIteratorBase<ColViewIterator<ViewT>>
 {
   using ViewBase = ViewIteratorBase<ColViewIterator<ViewT>>;
+
 public:
   /**
    * @brief Initialization constructor
    * @param view  parent grid view
    * @param pt  initial view-relative point
    */
-  explicit ColViewIterator(ViewT& view, const Indices& pt = Indices::Zero()) :
-    ViewBase{std::addressof(view), pt}
-  {}
+  explicit ColViewIterator(ViewT& view, const Indices& pt = Indices::Zero()) : ViewBase{std::addressof(view), pt} {}
 
   /**
    * @brief End iterator constructor
    * @param view  parent grid view
    * @param pt  initial view-relative point
    */
-  explicit ColViewIterator(ViewT& view, ViewIteratorEnd) :
-    ViewBase{std::addressof(view), Indices{0, view.extents().y}}
+  explicit ColViewIterator(ViewT& view, ViewIteratorEnd) : ViewBase{std::addressof(view), Indices{0, view.extents().y}}
   {}
 
 private:
@@ -537,17 +447,13 @@ private:
   /**
    * @brief End tag equality check
    */
-  inline bool eq_end_impl(ViewIteratorEnd) const
-  {
-    return this->pt_.y == this->view_->extents().y;
-  }
+  inline bool eq_end_impl(ViewIteratorEnd) const { return this->pt_.y == this->view_->extents().y; }
 
   friend ViewBase;
 };
 
 
-template<typename ViewT>
-struct ViewIteratorTraits<RowViewIterator<ViewT>>
+template <typename ViewT> struct ViewIteratorTraits<RowViewIterator<ViewT>>
 {
   using ViewType = ViewT;
 };
@@ -558,28 +464,24 @@ struct ViewIteratorTraits<RowViewIterator<ViewT>>
  *
  * @tparam GridT  parent grid type
  */
-template<typename ViewT>
-class RowViewIterator :
-  public ViewIteratorBase<RowViewIterator<ViewT>>
+template <typename ViewT> class RowViewIterator : public ViewIteratorBase<RowViewIterator<ViewT>>
 {
   using ViewBase = ViewIteratorBase<RowViewIterator<ViewT>>;
+
 public:
   /**
    * @brief Initialization constructor
    * @param view  parent grid view
    * @param pt  initial view-relative point
    */
-  explicit RowViewIterator(ViewT& view, const Indices& pt = Indices::Zero()) :
-    ViewBase{std::addressof(view), pt}
-  {}
+  explicit RowViewIterator(ViewT& view, const Indices& pt = Indices::Zero()) : ViewBase{std::addressof(view), pt} {}
 
   /**
    * @brief End iterator constructor
    * @param view  parent grid view
    * @param pt  initial view-relative point
    */
-  explicit RowViewIterator(ViewT& view, ViewIteratorEnd) :
-    ViewBase{std::addressof(view), Indices{view.extents().x, 0}}
+  explicit RowViewIterator(ViewT& view, ViewIteratorEnd) : ViewBase{std::addressof(view), Indices{view.extents().x, 0}}
   {}
 
 private:
@@ -600,30 +502,22 @@ private:
   /**
    * @brief End tag equality check
    */
-  inline bool eq_end_impl(ViewIteratorEnd) const
-  {
-    return this->pt_.x == this->view_->extents().x;
-  }
+  inline bool eq_end_impl(ViewIteratorEnd) const { return this->pt_.x == this->view_->extents().x; }
 
   friend ViewBase;
 };
 
 
-template<typename ParentT, typename BoundsT>
-class View : public GridBase<View<ParentT, BoundsT>>
+template <typename ParentT, typename BoundsT> class View : public GridBase<View<ParentT, BoundsT>>
 {
   using GridBaseType = GridBase<View<ParentT, BoundsT>>;
+
 public:
   using GridBaseType::operator=;
 
-  View(ParentT& parent) :
-    parent_{std::addressof(parent)}
-  {}
+  View(ParentT& parent) : parent_{std::addressof(parent)} {}
 
-  View(ParentT& parent, BoundsT bounds) :
-    GridBaseType{bounds},
-    parent_{std::addressof(parent)}
-  {}
+  View(ParentT& parent, BoundsT bounds) : GridBaseType{bounds}, parent_{std::addressof(parent)} {}
 
 private:
   /**
@@ -631,44 +525,29 @@ private:
    * @param pt  index pair associated with grid element
    * @return reference to cell
    */
-  constexpr auto& access_impl(const Indices& pt)
-  {
-    return parent_->operator[](pt);
-  }
+  constexpr auto& access_impl(const Indices& pt) { return parent_->operator[](pt); }
 
   /**
    * @brief Return immutable reference to element
    * @param pt  index pair associated with grid element
    * @return reference to cell
    */
-  constexpr const auto& access_impl(const Indices& pt) const
-  {
-    return parent_->operator[](pt);
-  }
+  constexpr const auto& access_impl(const Indices& pt) const { return parent_->operator[](pt); }
 
   /**
    * @brief Returns iterator (mutable) to first element
    */
-  inline auto begin_impl()
-  {
-    return ColViewIterator<View>{*this};
-  }
+  inline auto begin_impl() { return ColViewIterator<View>{*this}; }
 
   /**
    * @brief Returns iterator (immutable) to first element
    */
-  inline auto begin_impl() const
-  {
-    return ColViewIterator<const View>{*this};
-  }
+  inline auto begin_impl() const { return ColViewIterator<const View>{*this}; }
 
   /**
    * @brief Returns iterator (immutable) to one past last element
    */
-  inline auto end_impl() const
-  {
-    return ViewIteratorEnd{};
-  }
+  inline auto end_impl() const { return ViewIteratorEnd{}; }
 
   /// Pointer to parent grid being viewed
   ParentT* parent_;
@@ -680,82 +559,64 @@ private:
 /**
  * @brief Utility struct used to test if an object is a View
  */
-template<typename ViewT>
-struct is_view : std::integral_constant<bool, false> {};
+template <typename ViewT> struct is_view : std::integral_constant<bool, false>
+{};
 
 
-template<typename ParentT, typename BoundsT>
-struct is_view<View<ParentT, BoundsT>> : std::integral_constant<bool, true> {};
+template <typename ParentT, typename BoundsT>
+struct is_view<View<ParentT, BoundsT>> : std::integral_constant<bool, true>
+{};
 
 
-template<typename ParentT, typename BoundsT>
-struct GridTraits<View<ParentT, BoundsT>>
+template <typename ParentT, typename BoundsT> struct GridTraits<View<ParentT, BoundsT>>
 {
   using cell_type = cell_t<std::remove_cv_t<ParentT>>;
   using bounds_type = BoundsT;
 };
 
 
-template<typename CellT,
-         typename AllocatorT = std::allocator<CellT>>
-class Grid :
-  public GridBase<Grid<CellT, AllocatorT>>,
-  public RawAccessBase<Grid<CellT, AllocatorT>, CellT*>
+template <typename CellT, typename AllocatorT = std::allocator<CellT>>
+class Grid : public GridBase<Grid<CellT, AllocatorT>>, public RawAccessBase<Grid<CellT, AllocatorT>, CellT*>
 {
   using GridBaseType = GridBase<Grid>;
   using StorageBaseType = RawAccessBase<Grid, CellT*>;
-public:
-  Grid() :
-    GridBaseType{Extents::Zero()},
-    StorageBaseType{nullptr}
-  {}
 
-  explicit Grid(const Extents& extents) :
-    GridBaseType{extents},
-    StorageBaseType{allocator_.allocate(extents.area())}
+public:
+  Grid() : GridBaseType{Extents::Zero()}, StorageBaseType{nullptr} {}
+
+  explicit Grid(const Extents& extents) : GridBaseType{extents}, StorageBaseType{allocator_.allocate(extents.area())}
   {
     construct();
   }
 
   Grid(const Extents& extents, const CellT& val) :
-    GridBaseType{extents},
-    StorageBaseType{allocator_.allocate(extents.area())}
+      GridBaseType{extents},
+      StorageBaseType{allocator_.allocate(extents.area())}
   {
     construct(val);
   }
 
   Grid(const Extents& extents, const AllocatorT& alloc) :
-    GridBaseType{extents},
-    StorageBaseType{alloc.allocate(extents.area())},
-    allocator_{alloc}
+      GridBaseType{extents},
+      StorageBaseType{alloc.allocate(extents.area())},
+      allocator_{alloc}
   {
     construct();
   }
 
   Grid(const Extents& extents, const CellT& val, const AllocatorT& alloc) :
-    GridBaseType{extents},
-    StorageBaseType{alloc.allocate(extents.area())},
-    allocator_{alloc}
+      GridBaseType{extents},
+      StorageBaseType{alloc.allocate(extents.area())},
+      allocator_{alloc}
   {
     construct(val);
   }
 
-  Grid(const Grid& other) :
-    Grid{}
-  {
-    Grid::operator=(other);
-  }
+  Grid(const Grid& other) : Grid{} { Grid::operator=(other); }
 
-  Grid(Grid&& other) :
-    Grid{}
-  {
-    Grid::operator=(std::move(other));
-  }
+  Grid(Grid&& other) : Grid{} { Grid::operator=(std::move(other)); }
 
-  ~Grid()
-  {
-    clear();
-  }
+  ~Grid() { clear(); }
 
   inline void clear()
   {
@@ -841,8 +702,7 @@ public:
 private:
   friend StorageBaseType;
 
-  template<typename... CellArgs>
-  inline void construct(CellArgs&&... cell_args)
+  template <typename... CellArgs> inline void construct(CellArgs&&... cell_args)
   {
     for (auto d = Grid::begin(); d != Grid::end(); ++d)
     {
@@ -862,33 +722,25 @@ private:
 };
 
 
-template<typename CellT, typename AllocatorT>
-struct GridTraits<Grid<CellT, AllocatorT>>
+template <typename CellT, typename AllocatorT> struct GridTraits<Grid<CellT, AllocatorT>>
 {
   using cell_type = CellT;
   using bounds_type = FixedOriginBounds<0, 0>;
 };
 
 
-template<typename CellT>
-class MappedGrid :
-  public GridBase<MappedGrid<CellT>>,
-  public RawAccessBase<MappedGrid<CellT>, CellT*>
+template <typename CellT>
+class MappedGrid : public GridBase<MappedGrid<CellT>>, public RawAccessBase<MappedGrid<CellT>, CellT*>
 {
   using GridBaseType = GridBase<MappedGrid>;
   using StorageBaseType = RawAccessBase<MappedGrid, CellT*>;
+
 public:
   MappedGrid(MappedGrid&&) = delete;
 
-  MappedGrid(const MappedGrid& other) :
-    GridBaseType{other.extents()},
-    StorageBaseType{other.data_}
-  {}
+  MappedGrid(const MappedGrid& other) : GridBaseType{other.extents()}, StorageBaseType{other.data_} {}
 
-  MappedGrid(const Extents& extents, CellT* mem) :
-    GridBaseType{extents},
-    StorageBaseType{mem}
-  {}
+  MappedGrid(const Extents& extents, CellT* mem) : GridBaseType{extents}, StorageBaseType{mem} {}
 
   inline MappedGrid& operator=(const MappedGrid& other)
   {
@@ -910,61 +762,53 @@ private:
 };
 
 
-template<typename CellT>
-struct GridTraits<MappedGrid<CellT>>
+template <typename CellT> struct GridTraits<MappedGrid<CellT>>
 {
   using cell_type = CellT;
   using bounds_type = FixedOriginBounds<0, 0>;
 };
 
 
-template<typename CellT, int Height, int Width>
-class FixedGrid :
-  public GridBase<FixedGrid<CellT, Height, Width>>,
-  public ContainerAccessBase<FixedGrid<CellT, Height, Width>, std::array<CellT, Height * Width>>
+template <typename CellT, int Height, int Width>
+class FixedGrid : public GridBase<FixedGrid<CellT, Height, Width>>,
+                  public ContainerAccessBase<FixedGrid<CellT, Height, Width>, std::array<CellT, Height * Width>>
 {
   using GridBaseType = GridBase<FixedGrid>;
   using StorageBaseType = ContainerAccessBase<FixedGrid, std::array<CellT, Height * Width>>;
+
 public:
   using GridBaseType::operator=;
 
   FixedGrid() = default;
 
-  constexpr explicit FixedGrid(const CellT& initial_value)
-  {
-    this->data_.fill(initial_value);
-  }
+  constexpr explicit FixedGrid(const CellT& initial_value) { this->data_.fill(initial_value); }
 };
 
 
-template<typename CellT, int Height, int Width>
-struct GridTraits<FixedGrid<CellT, Height, Width>>
+template <typename CellT, int Height, int Width> struct GridTraits<FixedGrid<CellT, Height, Width>>
 {
   using cell_type = CellT;
   using bounds_type = FixedOriginExtentsBounds<0, 0, Height, Width>;
 };
 
 
-template<typename CellT, int Height, int Width>
-class FixedMappedGrid :
-  public GridBase<FixedMappedGrid<CellT, Height, Width>>,
-  public RawAccessBase<FixedMappedGrid<CellT, Height, Width>, CellT*>
+template <typename CellT, int Height, int Width>
+class FixedMappedGrid : public GridBase<FixedMappedGrid<CellT, Height, Width>>,
+                        public RawAccessBase<FixedMappedGrid<CellT, Height, Width>, CellT*>
 {
   using GridBaseType = GridBase<FixedMappedGrid>;
   using StorageBaseType = RawAccessBase<FixedMappedGrid, CellT*>;
+
 public:
   using GridBaseType::operator=;
 
-  explicit FixedMappedGrid(CellT* mem) :
-    StorageBaseType{mem}
-  {}
+  explicit FixedMappedGrid(CellT* mem) : StorageBaseType{mem} {}
 
   friend GridBaseType;
 };
 
 
-template<typename CellT, int Height, int Width>
-struct GridTraits<FixedMappedGrid<CellT, Height, Width>>
+template <typename CellT, int Height, int Width> struct GridTraits<FixedMappedGrid<CellT, Height, Width>>
 {
   using cell_type = CellT;
   using bounds_type = FixedOriginExtentsBounds<0, 0, Height, Width>;
@@ -979,8 +823,7 @@ struct GridTraits<FixedMappedGrid<CellT, Height, Width>>
 namespace std
 {
 
-template<typename ViewT>
-struct iterator_traits<::twod::RowViewIterator<ViewT>>
+template <typename ViewT> struct iterator_traits<::twod::RowViewIterator<ViewT>>
 {
   using iterator_category = std::bidirectional_iterator_tag;
   using difference_type = int;
@@ -990,8 +833,7 @@ struct iterator_traits<::twod::RowViewIterator<ViewT>>
 };
 
 
-template<typename ViewT>
-struct iterator_traits<::twod::ColViewIterator<ViewT>>
+template <typename ViewT> struct iterator_traits<::twod::ColViewIterator<ViewT>>
 {
   using iterator_category = std::bidirectional_iterator_tag;
   using difference_type = int;
@@ -1002,4 +844,4 @@ struct iterator_traits<::twod::ColViewIterator<ViewT>>
 
 }  // namespace std
 
-#endif // TWOD_GRID_H
+#endif  // TWOD_GRID_H

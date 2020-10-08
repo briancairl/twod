@@ -8,11 +8,9 @@
 #ifndef TWOD_BOUNDS_H
 #define TWOD_BOUNDS_H
 
-// CRTP
-#include <crtp/crtp.h>
-
 // TwoD
 #include <twod/coordinates.h>
+#include <twod/crtp.h>
 #include <twod/fwd.h>
 #include <twod/primitives.h>
 
@@ -22,8 +20,7 @@ namespace twod
 /**
  * @brief CRTP bounds base type
  */
-template<typename Derived>
-class BoundsBase
+template <typename Derived> class BoundsBase
 {
 public:
   /**
@@ -31,57 +28,38 @@ public:
    */
   constexpr bool operator==(const Derived& other) const
   {
-    return this->origin() == other.origin() and
-           this->extents() == other.extents();
+    return this->origin() == other.origin() and this->extents() == other.extents();
   }
 
   /**
    * @brief Returns grid coordinate origin
    */
-  constexpr bool operator!=(const Derived& other) const
-  {
-    return !this->operator==(other);
-  }
+  constexpr bool operator!=(const Derived& other) const { return !this->operator==(other); }
 
   /**
    * @brief Returns grid coordinate origin
    */
-  constexpr Indices origin() const
-  {
-    return derived()->origin_impl();
-  }
+  constexpr Indices origin() const { return derived()->origin_impl(); }
 
   /**
    * @brief Returns grid coordinate extents
    */
-  constexpr Extents extents() const
-  {
-    return derived()->extents_impl();
-  }
+  constexpr Extents extents() const { return derived()->extents_impl(); }
 
   /**
    * @brief Returns center point of bounds
    */
-  constexpr Indices center() const
-  {
-    return origin() + extents() / 2;
-  }
+  constexpr Indices center() const { return origin() + extents() / 2; }
 
   /**
    * @brief Returns bottom corner index
    */
-  constexpr Extents bottom() const
-  {
-    return origin() + extents();
-  }
+  constexpr Extents bottom() const { return origin() + extents(); }
 
   /**
    * @brief Check if grid (effectively) contains no values
    */
-  constexpr bool empty() const
-  {
-    return this->extents() == Extents::Zero();
-  }
+  constexpr bool empty() const { return this->extents() == Extents::Zero(); }
 
   /**
    * @brief Check if point falls within grid extents
@@ -91,8 +69,7 @@ public:
    */
   constexpr bool within(const Indices& pt) const
   {
-    return pt.all_ge(this->origin()) and
-           pt.all_lt(this->origin() + this->extents());
+    return pt.all_ge(this->origin()) and pt.all_lt(this->origin() + this->extents());
   }
 
   /**
@@ -101,11 +78,9 @@ public:
    * @retval true  if bounds overlap
    * @retval false  otherwise
    */
-  template<typename OtherDerived>
-  constexpr bool overlaps(const BoundsBase<OtherDerived>& other) const
+  template <typename OtherDerived> constexpr bool overlaps(const BoundsBase<OtherDerived>& other) const
   {
-    return (this->origin() - other.origin()).abs().all_le(this->extents() +
-                                                          other.extents());
+    return (this->origin() - other.origin()).abs().all_le(this->extents() + other.extents());
   }
 
   /**
@@ -116,11 +91,9 @@ public:
    * @retval true  if <code>other</code> is within this
    * @retval false  otherwise
    */
-  template<typename OtherDerived>
-  constexpr bool within(const BoundsBase<OtherDerived>& other) const
+  template <typename OtherDerived> constexpr bool within(const BoundsBase<OtherDerived>& other) const
   {
-    return other.origin().all_ge(this->origin()) and
-           other.bottom().all_le(this->bottom());
+    return other.origin().all_ge(this->origin()) and other.bottom().all_le(this->bottom());
   }
 
 private:
@@ -128,122 +101,93 @@ private:
 };
 
 
-class Bounds :
-  public BoundsBase<Bounds>,
-  public DynamicOriginBase,
-  public ResizableExtentsBase
+class Bounds : public BoundsBase<Bounds>, public DynamicOriginBase, public ResizableExtentsBase
 {
 public:
-  template<typename Derived>
-  Bounds(const BoundsBase<Derived>& bounds) :
-    DynamicOriginBase{bounds.origin()},
-    ResizableExtentsBase{bounds.extents()}
+  template <typename Derived>
+  Bounds(const BoundsBase<Derived>& bounds) : DynamicOriginBase{bounds.origin()}, ResizableExtentsBase{bounds.extents()}
   {}
 
-  Bounds(const Indices& origin, const Extents& extents) :
-    DynamicOriginBase{origin},
-    ResizableExtentsBase{extents}
-  {}
+  Bounds(const Indices& origin, const Extents& extents) : DynamicOriginBase{origin}, ResizableExtentsBase{extents} {}
 
 protected:
-  inline void set_extents(const Extents& extents)
-  {
-    ResizableExtentsBase::extents_ = extents;
-  }
+  inline void set_extents(const Extents& extents) { ResizableExtentsBase::extents_ = extents; }
 };
 
 
-template<int OriginX, int OriginY>
-class FixedOriginBounds :
-  public BoundsBase<FixedOriginBounds<OriginX, OriginY>>,
-  public FixedOriginBase<OriginX, OriginY>,
-  public ResizableExtentsBase
+template <int OriginX, int OriginY>
+class FixedOriginBounds : public BoundsBase<FixedOriginBounds<OriginX, OriginY>>,
+                          public FixedOriginBase<OriginX, OriginY>,
+                          public ResizableExtentsBase
 {
 public:
-  template<typename Derived>
-  FixedOriginBounds(const BoundsBase<Derived>& bounds) :
-    ResizableExtentsBase{bounds.extents()}
+  template <typename Derived>
+  FixedOriginBounds(const BoundsBase<Derived>& bounds) : ResizableExtentsBase{bounds.extents()}
   {}
 
-  FixedOriginBounds(const Extents& extents) :
-    ResizableExtentsBase{extents}
-  {}
+  FixedOriginBounds(const Extents& extents) : ResizableExtentsBase{extents} {}
 
 protected:
-  inline void set_extents(const Extents& extents)
-  {
-    ResizableExtentsBase::extents_ = extents;
-  }
+  inline void set_extents(const Extents& extents) { ResizableExtentsBase::extents_ = extents; }
 };
 
 
-template<int Height, int Width>
-struct FixedExtentsBounds :
-  public BoundsBase<FixedExtentsBounds<Height, Width>>,
-  public DynamicOriginBase,
-  public FixedExtentsBase<Height, Width>
+template <int Height, int Width>
+struct FixedExtentsBounds : public BoundsBase<FixedExtentsBounds<Height, Width>>,
+                            public DynamicOriginBase,
+                            public FixedExtentsBase<Height, Width>
 {
-  template<typename Derived>
-  FixedExtentsBounds(const BoundsBase<Derived>& bounds) :
-    DynamicOriginBase{bounds.origin()}
+  template <typename Derived> FixedExtentsBounds(const BoundsBase<Derived>& bounds) : DynamicOriginBase{bounds.origin()}
   {}
 
-  FixedExtentsBounds(const Indices& origin) :
-    DynamicOriginBase{origin}
-  {}
+  FixedExtentsBounds(const Indices& origin) : DynamicOriginBase{origin} {}
 };
 
 
-template<int OriginX, int OriginY, int Height, int Width>
-struct FixedOriginExtentsBounds :
-  public BoundsBase<FixedOriginExtentsBounds<OriginX, OriginY, Height, Width>>,
-  public FixedOriginBase<OriginX, OriginY>,
-  public FixedExtentsBase<Height, Width>
-{
-};
+template <int OriginX, int OriginY, int Height, int Width>
+struct FixedOriginExtentsBounds : public BoundsBase<FixedOriginExtentsBounds<OriginX, OriginY, Height, Width>>,
+                                  public FixedOriginBase<OriginX, OriginY>,
+                                  public FixedExtentsBase<Height, Width>
+{};
 
 
 /// End-tag object
-struct BoundsIteratorEnd {};
+struct BoundsIteratorEnd
+{};
 
 
 /**
  * @brief Base bounds point iterator
  */
-template<typename Derived>
-class BoundsIteratorBase
+template <typename Derived> class BoundsIteratorBase
 {
 public:
   /**
    * @brief Initialization constructor
    * @param bounds  parent bounds
    */
-  template<typename BoundsT>
+  template <typename BoundsT>
   explicit BoundsIteratorBase(const BoundsBase<BoundsT>& bounds) :
-    pt_{bounds.origin()},
-    origin_{pt_},
-    past_corner_{bounds.origin() + bounds.extents()}
+      pt_{bounds.origin()},
+      origin_{pt_},
+      past_corner_{bounds.origin() + bounds.extents()}
   {}
 
   /**
    * @brief End iterator constructor
    * @param bounds  parent bounds
    */
-  template<typename BoundsT>
-  explicit BoundsIteratorBase(const BoundsBase<BoundsT>& bounds,
-                              BoundsIteratorEnd _end) :
-    pt_{bounds.extents() - Indices{1, 1}},
-    origin_{pt_},
-    past_corner_{bounds.origin() + bounds.extents()}
+  template <typename BoundsT>
+  explicit BoundsIteratorBase(const BoundsBase<BoundsT>& bounds, BoundsIteratorEnd _end) :
+      pt_{bounds.extents() - Indices{1, 1}},
+      origin_{pt_},
+      past_corner_{bounds.origin() + bounds.extents()}
   {}
 
   /**
    * @brief Pre-increment overload
    */
-  inline Derived& operator++()
-  {
-    return derived()->increment_impl();
-  }
+  inline Derived& operator++() { return derived()->increment_impl(); }
   /**
    * @brief Post-increment overload
    */
@@ -257,50 +201,32 @@ public:
   /**
    * @brief Immutable cell value dereference operator
    */
-  inline const Indices operator*() const
-  {
-    return this->pt_;
-  }
+  inline const Indices operator*() const { return this->pt_; }
 
   /**
    * @brief Equality operator
    */
-  inline bool operator==(const Derived& other) const
-  {
-    return (this->pt_ == other.pt_);
-  }
+  inline bool operator==(const Derived& other) const { return (this->pt_ == other.pt_); }
 
   /**
    * @brief Inequality operator
    */
-  inline bool operator!=(const Derived& other) const
-  {
-    return !this->operator==(other);
-  }
+  inline bool operator!=(const Derived& other) const { return !this->operator==(other); }
 
   /**
    * @brief Equality operator
    */
-  inline bool operator==(BoundsIteratorEnd end) const
-  {
-    return derived()->eq_end_impl(end);
-  }
+  inline bool operator==(BoundsIteratorEnd end) const { return derived()->eq_end_impl(end); }
 
   /**
    * @brief Inequality operator
    */
-  inline bool operator!=(BoundsIteratorEnd end) const
-  {
-    return !this->operator==(end);
-  }
+  inline bool operator!=(BoundsIteratorEnd end) const { return !this->operator==(end); }
 
   /**
    * @brief Returns indices past bounds corner point (origin + extents + (1, 1))
    */
-  inline Indices past_corner() const
-  {
-    return past_corner_;
-  }
+  inline Indices past_corner() const { return past_corner_; }
 
 protected:
   /// Bounds-relative index
@@ -322,11 +248,10 @@ private:
  *
  * @tparam BoundsT  parent grid type
  */
-template<typename BoundsT>
-class ColBoundsIterator :
-  public BoundsIteratorBase<ColBoundsIterator<BoundsT>>
+template <typename BoundsT> class ColBoundsIterator : public BoundsIteratorBase<ColBoundsIterator<BoundsT>>
 {
   using Base = BoundsIteratorBase<ColBoundsIterator<BoundsT>>;
+
 public:
   using Base::Base;
 
@@ -348,10 +273,7 @@ private:
   /**
    * @brief End tag equality check
    */
-  inline bool eq_end_impl(BoundsIteratorEnd) const
-  {
-    return this->pt_.y == this->past_corner_.y;
-  }
+  inline bool eq_end_impl(BoundsIteratorEnd) const { return this->pt_.y == this->past_corner_.y; }
 
   friend Base;
 };
@@ -362,11 +284,10 @@ private:
  *
  * @tparam BoundsT  parent grid type
  */
-template<typename BoundsT>
-class RowBoundsIterator :
-  public BoundsIteratorBase<RowBoundsIterator<BoundsT>>
+template <typename BoundsT> class RowBoundsIterator : public BoundsIteratorBase<RowBoundsIterator<BoundsT>>
 {
   using Base = BoundsIteratorBase<RowBoundsIterator<BoundsT>>;
+
 public:
   using Base::Base;
 
@@ -388,10 +309,7 @@ private:
   /**
    * @brief End tag equality check
    */
-  inline bool eq_end_impl(BoundsIteratorEnd) const
-  {
-    return this->pt_.x == this->past_corner_.x;
-  }
+  inline bool eq_end_impl(BoundsIteratorEnd) const { return this->pt_.x == this->past_corner_.x; }
 
   friend Base;
 };
@@ -402,45 +320,27 @@ private:
  *
  * @tparam BoundsIteratorT  bounds iterator type
  */
-template<typename BoundsIteratorT>
-class BoundsIteratorRange
+template <typename BoundsIteratorT> class BoundsIteratorRange
 {
 public:
-  inline const BoundsIteratorT& begin() const
-  {
-    return begin_;
-  }
+  inline const BoundsIteratorT& begin() const { return begin_; }
 
-  static inline BoundsIteratorEnd end()
-  {
-    return BoundsIteratorEnd{};
-  }
+  static inline BoundsIteratorEnd end() { return BoundsIteratorEnd{}; }
 
-  inline const BoundsIteratorT& cbegin() const
-  {
-    return begin_;
-  }
+  inline const BoundsIteratorT& cbegin() const { return begin_; }
 
-  static inline BoundsIteratorEnd cend()
-  {
-    return BoundsIteratorEnd{};
-  }
+  static inline BoundsIteratorEnd cend() { return BoundsIteratorEnd{}; }
 
 private:
-  template<typename BoundsT>
-  BoundsIteratorRange(const BoundsBase<BoundsT>& bounds) :
-    begin_{bounds}
-  {}
+  template <typename BoundsT> BoundsIteratorRange(const BoundsBase<BoundsT>& bounds) : begin_{bounds} {}
 
   mutable BoundsIteratorT begin_;
 
-  template<typename BoundsT>
-  friend inline BoundsIteratorRange<ColBoundsIterator<BoundsT>>
-    make_col_bounds_range(const BoundsBase<BoundsT>&);
+  template <typename BoundsT>
+  friend inline BoundsIteratorRange<ColBoundsIterator<BoundsT>> make_col_bounds_range(const BoundsBase<BoundsT>&);
 
-  template<typename BoundsT>
-  friend inline BoundsIteratorRange<RowBoundsIterator<BoundsT>>
-    make_row_bounds_range(const BoundsBase<BoundsT>&);
+  template <typename BoundsT>
+  friend inline BoundsIteratorRange<RowBoundsIterator<BoundsT>> make_row_bounds_range(const BoundsBase<BoundsT>&);
 };
 
 /**
@@ -448,9 +348,8 @@ private:
  *
  * @tparam BoundsT  parent grid type
  */
-template<typename BoundsT>
-inline BoundsIteratorRange<ColBoundsIterator<BoundsT>>
-  make_col_bounds_range(const BoundsBase<BoundsT>& bounds)
+template <typename BoundsT>
+inline BoundsIteratorRange<ColBoundsIterator<BoundsT>> make_col_bounds_range(const BoundsBase<BoundsT>& bounds)
 {
   return BoundsIteratorRange<ColBoundsIterator<BoundsT>>{bounds};
 }
@@ -460,9 +359,8 @@ inline BoundsIteratorRange<ColBoundsIterator<BoundsT>>
  *
  * @tparam BoundsT  parent grid type
  */
-template<typename BoundsT>
-inline BoundsIteratorRange<RowBoundsIterator<BoundsT>>
-  make_row_bounds_range(const BoundsBase<BoundsT>& bounds)
+template <typename BoundsT>
+inline BoundsIteratorRange<RowBoundsIterator<BoundsT>> make_row_bounds_range(const BoundsBase<BoundsT>& bounds)
 {
   return BoundsIteratorRange<RowBoundsIterator<BoundsT>>{bounds};
 }
@@ -475,7 +373,7 @@ inline BoundsIteratorRange<RowBoundsIterator<BoundsT>>
  *
  * @return bounds representing region of intersection between two bounds
  */
-template<typename LBoundsT, typename RBoundsT>
+template <typename LBoundsT, typename RBoundsT>
 inline Bounds intersection(const BoundsBase<LBoundsT>& lhs, const BoundsBase<RBoundsT>& rhs)
 {
   const auto lhs_t = lhs.origin();
@@ -502,7 +400,7 @@ inline Bounds intersection(const BoundsBase<LBoundsT>& lhs, const BoundsBase<RBo
  *
  * @return bounds representing region of intersection between two bounds
  */
-template<typename LBoundsT, typename RBoundsT>
+template <typename LBoundsT, typename RBoundsT>
 inline Bounds operator&(const BoundsBase<LBoundsT>& lhs, const BoundsBase<RBoundsT>& rhs)
 {
   return intersection(lhs, rhs);
@@ -510,4 +408,4 @@ inline Bounds operator&(const BoundsBase<LBoundsT>& lhs, const BoundsBase<RBound
 
 }  // namespace twod
 
-#endif // TWOD_BOUNDS_H
+#endif  // TWOD_BOUNDS_H

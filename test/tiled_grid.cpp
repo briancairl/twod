@@ -10,8 +10,8 @@
 #include <gtest/gtest.h>
 
 // TwoD
-#include <twod/tiled_grid.h>
 #include <twod/stream.h>
+#include <twod/tiled_grid.h>
 
 
 using namespace twod;
@@ -82,7 +82,7 @@ TEST(FixedTiledGrid, AssignIterated)
 }
 
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

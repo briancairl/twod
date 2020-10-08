@@ -28,44 +28,40 @@
 #define TWOD_FLOOD_FILL_H
 
 // C++ Standard Library
-#include <queue>
 #include <memory>
+#include <queue>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 // TwoD
-#include <twod/grid.h>
 #include <twod/coordinates.h>
+#include <twod/grid.h>
 #include <twod/sparse_cell.h>
 
 namespace twod
 {
 
-template<typename GridT /* = deduced */,
-         typename SeedIteratorT /* = deduced */,
-         typename ValueUpdaterFnT /* = deduced */,
-         typename ExpansionValidatorFnT /* = deduced */,
-         typename SparseCellCompareT = std::less<sparse_cell_t<GridT>>,
-         typename SparseCellAllocatorT = std::allocator<sparse_cell_t<GridT>>>
-void flood_fill(GridT&& grid,
-                SeedIteratorT first,
-                SeedIteratorT last,
-                const ValueUpdaterFnT& value_updater,
-                const ExpansionValidatorFnT& expansion_validator,
-                const SparseCellCompareT& value_compare = SparseCellCompareT{})
+template <
+  typename GridT /* = deduced */,
+  typename SeedIteratorT /* = deduced */,
+  typename ValueUpdaterFnT /* = deduced */,
+  typename ExpansionValidatorFnT /* = deduced */,
+  typename SparseCellCompareT = std::less<sparse_cell_t<GridT>>,
+  typename SparseCellAllocatorT = std::allocator<sparse_cell_t<GridT>>>
+void flood_fill(
+  GridT&& grid,
+  SeedIteratorT first,
+  SeedIteratorT last,
+  const ValueUpdaterFnT& value_updater,
+  const ExpansionValidatorFnT& expansion_validator,
+  const SparseCellCompareT& value_compare = SparseCellCompareT{})
 {
   static_assert(is_grid<GridT>(), "'GridT' must be derived from twod::GridBase");
 
   // Create queue, max-sorted on seed value
-  std::priority_queue<sparse_cell_t<GridT>,
-                      std::vector<sparse_cell_t<GridT>, SparseCellAllocatorT>,
-                      SparseCellCompareT> seeds{
-    first,
-    last,
-    SparseCellCompareT{value_compare},
-    std::vector<sparse_cell_t<GridT>, SparseCellAllocatorT>{}
-  };
+  std::priority_queue<sparse_cell_t<GridT>, std::vector<sparse_cell_t<GridT>, SparseCellAllocatorT>, SparseCellCompareT>
+    seeds{first, last, SparseCellCompareT{value_compare}, std::vector<sparse_cell_t<GridT>, SparseCellAllocatorT>{}};
 
   while (!seeds.empty())
   {
@@ -86,29 +82,32 @@ void flood_fill(GridT&& grid,
       {
         seeds.emplace(next_value, next_position);
         grid[next_position] = next_value;
-      } 
+      }
     }
   }
 }
 
 
-template<typename GridT /* = deduced */,
-         typename SeedGeneratorFnT /* = deduced */,
-         typename ValueUpdaterFnT /* = deduced */,
-         typename ExpansionValidatorFnT /* = deduced */,
-         typename SparseCellCompareT = std::less<sparse_cell_t<GridT>>,
-         typename SparseCellAllocatorT = std::allocator<sparse_cell_t<GridT>>>
-void flood_fill(GridT&& grid,
-                const SeedGeneratorFnT& seed_generator,
-                const ValueUpdaterFnT& value_updater,
-                const ExpansionValidatorFnT& expansion_validator,
-                const SparseCellCompareT& value_compare = SparseCellCompareT{})
+template <
+  typename GridT /* = deduced */,
+  typename SeedGeneratorFnT /* = deduced */,
+  typename ValueUpdaterFnT /* = deduced */,
+  typename ExpansionValidatorFnT /* = deduced */,
+  typename SparseCellCompareT = std::less<sparse_cell_t<GridT>>,
+  typename SparseCellAllocatorT = std::allocator<sparse_cell_t<GridT>>>
+void flood_fill(
+  GridT&& grid,
+  const SeedGeneratorFnT& seed_generator,
+  const ValueUpdaterFnT& value_updater,
+  const ExpansionValidatorFnT& expansion_validator,
+  const SparseCellCompareT& value_compare = SparseCellCompareT{})
 {
   static_assert(is_grid<GridT>(), "'GridT' must be derived from twod::GridBase");
 
   // Collect seeds from grid
   std::vector<sparse_cell_t<GridT>, SparseCellAllocatorT> seeds;
-  for (ColViewIterator<std::remove_reference_t<GridT>> itr{static_cast<GridT&>(grid)}; itr != twod::ViewIteratorEnd{}; ++itr)
+  for (ColViewIterator<std::remove_reference_t<GridT>> itr{static_cast<GridT&>(grid)}; itr != twod::ViewIteratorEnd{};
+       ++itr)
   {
     if (seed_generator(*itr))
     {
@@ -122,4 +121,4 @@ void flood_fill(GridT&& grid,
 
 }  // namespace twod
 
-#endif // TWOD_FLOOD_FILL_H
+#endif  // TWOD_FLOOD_FILL_H

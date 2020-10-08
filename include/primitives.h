@@ -21,21 +21,17 @@ namespace twod
  * @tparam Height  compile-time grid height
  * @tparam Width  compile-time grid width
  */
-template<int Height, int Width>
-class FixedExtentsBase
+template <int Height, int Width> class FixedExtentsBase
 {
 protected:
   /// @copydoc GridBase::extents
-  constexpr static Extents extents_impl()
-  {
-    return extents_;
-  }
+  constexpr static Extents extents_impl() { return extents_; }
 
   /// Grid extents
   constexpr static const Extents extents_{Height, Width};
 
-  template<typename OtherDerivedT> friend class BoundsBase;
-  template<typename OtherDerivedT> friend class GridBase;
+  template <typename OtherDerivedT> friend class BoundsBase;
+  template <typename OtherDerivedT> friend class GridBase;
 };
 
 
@@ -48,21 +44,16 @@ protected:
   ResizableExtentsBase(const ResizableExtentsBase&) = default;
 
   /// Extents constructor
-  explicit ResizableExtentsBase(const Extents& extents) :
-    extents_{extents}
-  {}
+  explicit ResizableExtentsBase(const Extents& extents) : extents_{extents} {}
 
   /// @copydoc GridBase::extents
-  inline Extents extents_impl() const
-  {
-    return extents_;
-  }
+  inline Extents extents_impl() const { return extents_; }
 
   /// Grid extents
   Extents extents_;
 
-  template<typename OtherDerivedT> friend class BoundsBase;
-  template<typename OtherDerivedT> friend class GridBase;
+  template <typename OtherDerivedT> friend class BoundsBase;
+  template <typename OtherDerivedT> friend class GridBase;
 };
 
 
@@ -72,21 +63,17 @@ protected:
  * @tparam X  compile-time origin X-coordinate
  * @tparam Y  compile-time origin T-coordinate
  */
-template<int X, int Y>
-class FixedOriginBase
+template <int X, int Y> class FixedOriginBase
 {
 protected:
   /// @copydoc GridBase::origin
-  constexpr static Indices origin_impl()
-  {
-    return origin_;
-  }
+  constexpr static Indices origin_impl() { return origin_; }
 
   /// Origin location
   constexpr static const Indices origin_{X, Y};
 
-  template<typename OtherDerivedT> friend class BoundsBase;
-  template<typename OtherDerivedT> friend class GridBase;
+  template <typename OtherDerivedT> friend class BoundsBase;
+  template <typename OtherDerivedT> friend class GridBase;
 };
 
 
@@ -99,42 +86,31 @@ protected:
   DynamicOriginBase(const DynamicOriginBase&) = default;
 
   /// Indices constructor
-  explicit DynamicOriginBase(const Indices& origin) :
-    origin_{origin}
-  {}
+  explicit DynamicOriginBase(const Indices& origin) : origin_{origin} {}
 
   /// @copydoc GridBase::origin
-  inline Indices origin_impl() const
-  {
-    return origin_;
-  }
+  inline Indices origin_impl() const { return origin_; }
 
   /// Origin location
   Indices origin_;
 
-  template<typename OtherDerivedT> friend class BoundsBase;
-  template<typename OtherDerivedT> friend class GridBase;
+  template <typename OtherDerivedT> friend class BoundsBase;
+  template <typename OtherDerivedT> friend class GridBase;
 };
 
 
-
-template<typename Derived,
-         typename ContainerT,
-         typename SizeT = typename ContainerT::size_type,
-         typename IteratorT = typename ContainerT::iterator,
-         typename ConstIteratorT = typename ContainerT::const_iterator>
+template <
+  typename Derived,
+  typename ContainerT,
+  typename SizeT = typename ContainerT::size_type,
+  typename IteratorT = typename ContainerT::iterator,
+  typename ConstIteratorT = typename ContainerT::const_iterator>
 class ContainerAccessBase
 {
 public:
-  template<typename... Args>
-  explicit ContainerAccessBase(Args&&... args) :
-    data_{std::forward<Args>(args)...}
-  {}
+  template <typename... Args> explicit ContainerAccessBase(Args&&... args) : data_{std::forward<Args>(args)...} {}
 
-  inline SizeT toLinearIndex(const Indices& pt) const
-  {
-    return (derived()->extents().x * pt.y) + pt.x;
-  }
+  inline SizeT toLinearIndex(const Indices& pt) const { return (derived()->extents().x * pt.y) + pt.x; }
 
 protected:
   ContainerT data_;
@@ -142,56 +118,30 @@ protected:
 private:
   IMPLEMENT_CRTP_BASE_CLASS(ContainerAccessBase, Derived);
 
-  inline const auto& access_impl(const Indices& pt) const
-  {
-    return data_[toLinearIndex(pt)];
-  }
+  inline const auto& access_impl(const Indices& pt) const { return data_[toLinearIndex(pt)]; }
 
-  inline auto& access_impl(const Indices& pt)
-  {
-    return data_[toLinearIndex(pt)];
-  }
+  inline auto& access_impl(const Indices& pt) { return data_[toLinearIndex(pt)]; }
 
-  inline IteratorT begin_impl()
-  {
-    return data_.begin();
-  }
+  inline IteratorT begin_impl() { return data_.begin(); }
 
-  inline IteratorT end_impl()
-  {
-    return data_.end();
-  }
+  inline IteratorT end_impl() { return data_.end(); }
 
-  inline ConstIteratorT begin_impl() const
-  {
-    return data_.begin();
-  }
+  inline ConstIteratorT begin_impl() const { return data_.begin(); }
 
-  inline ConstIteratorT end_impl() const
-  {
-    return data_.end();
-  }
+  inline ConstIteratorT end_impl() const { return data_.end(); }
 
-  template<typename OtherDerivedT> friend class GridBase;
+  template <typename OtherDerivedT> friend class GridBase;
 };
 
 
-template<typename Derived, typename PtrT>
-class RawAccessBase
+template <typename Derived, typename PtrT> class RawAccessBase
 {
-  static_assert(
-    std::is_pointer_v<PtrT>,
-    "RawAccessBase: expecting PtrT to be a pointer type"
-  );
-public:
-  explicit RawAccessBase(PtrT data) :
-    data_{data}
-  {}
+  static_assert(std::is_pointer_v<PtrT>, "RawAccessBase: expecting PtrT to be a pointer type");
 
-  inline int toLinearIndex(const Indices& pt) const
-  {
-    return (derived()->extents().x * pt.y) + pt.x;
-  }
+public:
+  explicit RawAccessBase(PtrT data) : data_{data} {}
+
+  inline int toLinearIndex(const Indices& pt) const { return (derived()->extents().x * pt.y) + pt.x; }
 
   inline void swap(Derived& other)
   {
@@ -203,15 +153,9 @@ public:
     other.data_ = this_data;
   }
 
-  inline PtrT data()
-  {
-    return data_;
-  }
+  inline PtrT data() { return data_; }
 
-  inline const PtrT data() const
-  {
-    return data_;
-  }
+  inline const PtrT data() const { return data_; }
 
 protected:
   PtrT data_;
@@ -219,39 +163,21 @@ protected:
 private:
   IMPLEMENT_CRTP_BASE_CLASS(RawAccessBase, Derived);
 
-  inline const auto& access_impl(const Indices& pt) const
-  {
-    return data_[toLinearIndex(pt)];
-  }
+  inline const auto& access_impl(const Indices& pt) const { return data_[toLinearIndex(pt)]; }
 
-  inline auto& access_impl(const Indices& pt)
-  {
-    return data_[toLinearIndex(pt)];
-  }
+  inline auto& access_impl(const Indices& pt) { return data_[toLinearIndex(pt)]; }
 
-  inline PtrT begin_impl()
-  {
-    return data_;
-  }
+  inline PtrT begin_impl() { return data_; }
 
-  inline PtrT end_impl()
-  {
-    return data_ + derived()->extents().area();
-  }
+  inline PtrT end_impl() { return data_ + derived()->extents().area(); }
 
-  inline const PtrT begin_impl() const
-  {
-    return data_;
-  }
+  inline const PtrT begin_impl() const { return data_; }
 
-  inline const PtrT end_impl() const
-  {
-    return data_ + derived()->extents().area();
-  }
+  inline const PtrT end_impl() const { return data_ + derived()->extents().area(); }
 
-  template<typename OtherDerivedT> friend class GridBase;
+  template <typename OtherDerivedT> friend class GridBase;
 };
 
 }  // namespace twod
 
-#endif // TWOD_PRIMITIVES_H
+#endif  // TWOD_PRIMITIVES_H
