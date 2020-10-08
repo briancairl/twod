@@ -18,7 +18,6 @@
 using namespace twod;
 
 
-
 TEST(MappedGrid, InitSizeConstructor)
 {
   constexpr Extents extents{20, 10};
@@ -149,12 +148,15 @@ TEST(MappedGrid, ColViewIterator)
 
   ColViewIterator<MappedGrid<int>> itr{grid};
 
-  for (ColViewIterator<MappedGrid<int>> itr{grid}; itr != ColViewIterator<MappedGrid<int>>{grid, ViewIteratorEnd{}}; ++itr)
+  for (ColViewIterator<MappedGrid<int>> itr{grid}; itr != ColViewIterator<MappedGrid<int>>{grid, ViewIteratorEnd{}};
+       ++itr)
   {
     *itr = 5;
   }
 
-  for (ColViewIterator<const MappedGrid<int>> itr{grid}; itr != ColViewIterator<const MappedGrid<int>>{grid, ViewIteratorEnd{}}; ++itr)
+  for (ColViewIterator<const MappedGrid<int>> itr{grid};
+       itr != ColViewIterator<const MappedGrid<int>>{grid, ViewIteratorEnd{}};
+       ++itr)
   {
     ASSERT_EQ(*itr, 5);
   }
@@ -195,12 +197,15 @@ TEST(MappedGrid, RowViewIterator)
 
   RowViewIterator<MappedGrid<int>> itr{grid};
 
-  for (RowViewIterator<MappedGrid<int>> itr{grid}; itr != RowViewIterator<MappedGrid<int>>{grid, ViewIteratorEnd{}}; ++itr)
+  for (RowViewIterator<MappedGrid<int>> itr{grid}; itr != RowViewIterator<MappedGrid<int>>{grid, ViewIteratorEnd{}};
+       ++itr)
   {
     *itr = 5;
   }
 
-  for (RowViewIterator<const MappedGrid<int>> itr{grid}; itr != RowViewIterator<const MappedGrid<int>>{grid, ViewIteratorEnd{}}; ++itr)
+  for (RowViewIterator<const MappedGrid<int>> itr{grid};
+       itr != RowViewIterator<const MappedGrid<int>>{grid, ViewIteratorEnd{}};
+       ++itr)
   {
     ASSERT_EQ(*itr, 5);
   }
@@ -249,7 +254,7 @@ TEST(MappedGrid, ViewBoundsIteration)
 }
 
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

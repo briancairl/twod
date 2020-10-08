@@ -35,8 +35,7 @@ namespace twod
 namespace detail
 {
 
-template<typename CellT>
-struct SparseCell
+template <typename CellT> struct SparseCell
 {
   /// Value at position
   CellT value;
@@ -44,60 +43,38 @@ struct SparseCell
   /// Location information
   Indices position;
 
-  SparseCell(CellT _value, Indices _position) :
-    value{_value},
-    position{_position}
-  {}
+  SparseCell(CellT _value, Indices _position) : value{_value}, position{_position} {}
 
   /// Value LT comparison overload
-  constexpr bool operator<(const SparseCell& other) const
-  {
-    return this->value < other.value;
-  }
+  constexpr bool operator<(const SparseCell& other) const { return this->value < other.value; }
 };
 
 }  // namespace detail
 
 
-template<typename CellT>
-struct SparseCell : detail::SparseCell<CellT>
+template <typename CellT> struct SparseCell : detail::SparseCell<CellT>
 {
-  SparseCell(CellT _value, Indices _position) :
-    detail::SparseCell<CellT>{_value, _position}
-  {}
+  SparseCell(CellT _value, Indices _position) : detail::SparseCell<CellT>{_value, _position} {}
 
   /// Cast to position overload
-  operator const Indices() const
-  {
-    return this->position;
-  }
+  operator const Indices() const { return this->position; }
 
   /// Cast to value overload
-  operator const CellT&() const
-  {
-    return this->value;
-  }
+  operator const CellT&() const { return this->value; }
 };
 
 
-template<>
-struct SparseCell<Indices> : detail::SparseCell<Indices>
+template <> struct SparseCell<Indices> : detail::SparseCell<Indices>
 {
-  SparseCell(Indices _value, Indices _position) :
-    detail::SparseCell<Indices>{_value, _position}
-  {}
+  SparseCell(Indices _value, Indices _position) : detail::SparseCell<Indices>{_value, _position} {}
 
   /// Cast to position overload
-  operator const Indices() const
-  {
-    return this->position;
-  }
+  operator const Indices() const { return this->position; }
 };
 
 
-template<typename GridT>
-using sparse_cell_t = SparseCell<cell_t<GridT>>;
+template <typename GridT> using sparse_cell_t = SparseCell<cell_t<GridT>>;
 
 }  // namespace twod
 
-#endif // TWOD_SPARSE_VALUE_H
+#endif  // TWOD_SPARSE_VALUE_H

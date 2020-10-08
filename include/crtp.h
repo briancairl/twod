@@ -16,15 +16,9 @@
  * @param BaseTmpl  CRTP-base template
  * @param DerivedT  CRTP-derived type
  */
-#define IMPLEMENT_CRTP_BASE_CLASS(BaseTmpl, DerivedT) \
-  constexpr DerivedT* derived() \
-  {\
-    return static_cast<DerivedT*>(this); \
-  }\
-  \
-  constexpr const DerivedT* derived() const \
-  {\
-    return static_cast<const DerivedT*>(this); \
-  }
+#define IMPLEMENT_CRTP_BASE_CLASS(BaseTmpl, DerivedT)                                                                  \
+  constexpr DerivedT* derived() { return static_cast<DerivedT*>(this); }                                               \
+                                                                                                                       \
+  constexpr const DerivedT* derived() const { return static_cast<const DerivedT*>(this); }
 
-#endif // TWOD_CRTP_H
+#endif  // TWOD_CRTP_H

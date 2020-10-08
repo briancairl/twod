@@ -9,8 +9,8 @@
 #define TWOD_STREAM_H
 
 // C++ Standard Library
-#include <ostream>
 #include <iomanip>
+#include <ostream>
 
 // TwoD
 #include <twod/fwd.h>
@@ -19,22 +19,19 @@ namespace twod
 {
 
 
-template<typename CoordT>
-inline std::ostream& operator<<(std::ostream& os, const Coordinates<CoordT>& pt)
+template <typename CoordT> inline std::ostream& operator<<(std::ostream& os, const Coordinates<CoordT>& pt)
 {
   return os << pt.x << ", " << pt.y;
 }
 
 
-template<typename BoundsT>
-inline std::ostream& operator<<(std::ostream& os, const BoundsBase<BoundsT>& bounds)
+template <typename BoundsT> inline std::ostream& operator<<(std::ostream& os, const BoundsBase<BoundsT>& bounds)
 {
   return os << '(' << bounds.origin() << ", " << bounds.origin() + bounds.extents() << ')';
 }
 
 
-template<typename DerivedT>
-inline std::ostream& operator<<(std::ostream& os, const GridBase<DerivedT>& grid)
+template <typename DerivedT> inline std::ostream& operator<<(std::ostream& os, const GridBase<DerivedT>& grid)
 {
   using GridBaseType = const GridBase<DerivedT>;
 
@@ -51,8 +48,7 @@ inline std::ostream& operator<<(std::ostream& os, const GridBase<DerivedT>& grid
   return os;
 }
 
-template<typename GridT>
-inline std::ostream& operator<<(std::ostream& os, const Tile<GridT>& tile)
+template <typename GridT> inline std::ostream& operator<<(std::ostream& os, const Tile<GridT>& tile)
 {
   if (tile.data)
   {
@@ -68,4 +64,4 @@ inline std::ostream& operator<<(std::ostream& os, const Tile<GridT>& tile)
 
 }  // namespace twod
 
-#endif // TWOD_STREAM_H
+#endif  // TWOD_STREAM_H

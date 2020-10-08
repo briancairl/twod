@@ -21,22 +21,21 @@
 namespace twod
 {
 
-template<typename GridT>
-struct Tile
+template <typename GridT> struct Tile
 {
   std::unique_ptr<GridT> data;
   Indices origin = Indices::Zero();
 };
 
 
-template<typename CellT, int Height, int Width, int TileHeight = Height/2, int TileWidth=Width/2>
-class FixedTiledGrid :
-  public GridBase<FixedTiledGrid<CellT, Height, Width, TileHeight, TileWidth>>
+template <typename CellT, int Height, int Width, int TileHeight = Height / 2, int TileWidth = Width / 2>
+class FixedTiledGrid : public GridBase<FixedTiledGrid<CellT, Height, Width, TileHeight, TileWidth>>
 {
   static_assert(Height >= TileHeight, "FixedTiledGrid: invalid TileHeight");
   static_assert(Width >= TileWidth, "FixedTiledGrid: invalid TileWidth");
 
   using GridBaseType = GridBase<FixedTiledGrid>;
+
 public:
   constexpr static const int TileRows = Height / TileHeight;
   constexpr static const int TileCols = Width / TileWidth;
@@ -45,10 +44,7 @@ public:
   using TileGrid = FixedGrid<CellT, TileHeight, TileWidth>;
   using TileType = Tile<TileGrid>;
 
-  constexpr FixedTiledGrid(const CellT& default_value) :
-    default_value_{default_value},
-    view_{*this}
-  {}
+  constexpr FixedTiledGrid(const CellT& default_value) : default_value_{default_value}, view_{*this} {}
 
   inline FixedGrid<bool, TileRows, TileCols> mask() const
   {
@@ -64,28 +60,15 @@ public:
 
   inline std::size_t active() const
   {
-    return std::count_if(tiles_.begin(),
-                         tiles_.end(),
-                         [](const TileType& t) -> bool
-                         {
-                           return static_cast<bool>(t.data);
-                         });
+    return std::count_if(
+      tiles_.begin(), tiles_.end(), [](const TileType& t) -> bool { return static_cast<bool>(t.data); });
   }
 
-  inline const TileType& tile(Indices index) const
-  {
-    return tiles_[index];
-  }
+  inline const TileType& tile(Indices index) const { return tiles_[index]; }
 
-  constexpr static int rows()
-  {
-    return TileRows;
-  }
+  constexpr static int rows() { return TileRows; }
 
-  constexpr static int cols()
-  {
-    return TileCols;
-  }
+  constexpr static int cols() { return TileCols; }
 
 private:
   inline const CellT& access_impl(const Indices& pt) const
@@ -114,25 +97,13 @@ private:
     return tile.data->operator[](pt - tile.origin);
   }
 
-  inline auto begin_impl()
-  {
-    return view_.begin();
-  }
+  inline auto begin_impl() { return view_.begin(); }
 
-  inline auto end_impl()
-  {
-    return view_.end();
-  }
+  inline auto end_impl() { return view_.end(); }
 
-  inline const auto begin_impl() const
-  {
-    return view_.cbegin();
-  }
+  inline const auto begin_impl() const { return view_.cbegin(); }
 
-  inline const auto end_impl() const
-  {
-    return view_.cend();
-  }
+  inline const auto end_impl() const { return view_.cend(); }
 
   /// Cell value to return when tile is compressed
   CellT default_value_;
@@ -147,7 +118,7 @@ private:
 };
 
 
-template<typename CellT, int Height, int Width, int TileHeight, int TileWidth>
+template <typename CellT, int Height, int Width, int TileHeight, int TileWidth>
 struct GridTraits<FixedTiledGrid<CellT, Height, Width, TileHeight, TileWidth>>
 {
   using cell_type = CellT;
@@ -156,4 +127,4 @@ struct GridTraits<FixedTiledGrid<CellT, Height, Width, TileHeight, TileWidth>>
 
 }  // namespace twod
 
-#endif // TWOD_TILED_GRID_H
+#endif  // TWOD_TILED_GRID_H

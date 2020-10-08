@@ -191,7 +191,6 @@ TEST(Grid, CopyAssignmentEmpty)
 }
 
 
-
 TEST(Grid, MoveAssignment)
 {
   Grid<int> initial_grid{Extents{20, 10}, 1};
@@ -374,7 +373,8 @@ TEST(Grid, ColViewIterator)
     *itr = 5;
   }
 
-  for (ColViewIterator<const Grid<int>> itr{grid}; itr != ColViewIterator<const Grid<int>>{grid, ViewIteratorEnd{}}; ++itr)
+  for (ColViewIterator<const Grid<int>> itr{grid}; itr != ColViewIterator<const Grid<int>>{grid, ViewIteratorEnd{}};
+       ++itr)
   {
     ASSERT_EQ(*itr, 5);
   }
@@ -410,7 +410,8 @@ TEST(Grid, RowViewIterator)
     *itr = 5;
   }
 
-  for (RowViewIterator<const Grid<int>> itr{grid}; itr != RowViewIterator<const Grid<int>>{grid, ViewIteratorEnd{}}; ++itr)
+  for (RowViewIterator<const Grid<int>> itr{grid}; itr != RowViewIterator<const Grid<int>>{grid, ViewIteratorEnd{}};
+       ++itr)
   {
     ASSERT_EQ(*itr, 5);
   }
@@ -572,7 +573,7 @@ TEST(View, BoundsRangeIteration)
 TEST(MappedGrid, FromArrayAssignGrid)
 {
   int segment[200];
-  std::fill(segment, segment+200, 1);
+  std::fill(segment, segment + 200, 1);
 
   MappedGrid<int> grid{Extents{20, 10}, segment};
 
@@ -590,7 +591,7 @@ TEST(MappedGrid, FromArrayAssignGrid)
 TEST(FixedMappedGrid, FromArrayAssignGrid)
 {
   int segment[200];
-  std::fill(segment, segment+200, 1);
+  std::fill(segment, segment + 200, 1);
 
   FixedMappedGrid<int, 20, 10> grid{segment};
 
@@ -632,7 +633,7 @@ TEST(FixedGrid, AssignIterated)
 }
 
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
