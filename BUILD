@@ -3,8 +3,5 @@ cc_library(
   hdrs=glob(["include/*"]),
   strip_include_prefix="include",
   include_prefix="twod",
-  deps=[
-    "@crtp//:crtp",
-  ],
   visibility=["//visibility:public"],
 )

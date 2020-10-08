@@ -8,11 +8,9 @@
 #ifndef TWOD_BOUNDS_H
 #define TWOD_BOUNDS_H
 
-// CRTP
-#include <crtp/crtp.h>
-
 // TwoD
 #include <twod/coordinates.h>
+#include <twod/crtp.h>
 #include <twod/fwd.h>
 #include <twod/primitives.h>
 

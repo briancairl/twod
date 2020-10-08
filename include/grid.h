@@ -14,12 +14,10 @@
 #include <type_traits>
 #include <utility>
 
-// CRTP
-#include <crtp/crtp.h>
-
 // TwoD
 #include <twod/bounds.h>
 #include <twod/coordinates.h>
+#include <twod/crtp.h>
 #include <twod/fwd.h>
 #include <twod/primitives.h>
 
