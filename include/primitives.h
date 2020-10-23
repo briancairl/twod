@@ -110,7 +110,7 @@ class ContainerAccessBase
 public:
   template <typename... Args> explicit ContainerAccessBase(Args&&... args) : data_{std::forward<Args>(args)...} {}
 
-  inline SizeT toLinearIndex(const Indices& pt) const { return (derived()->extents().x * pt.y) + pt.x; }
+  inline SizeT toLinearIndex(const Indices& pt) const { return (derived()->extents().y * pt.x) + pt.y; }
 
 protected:
   ContainerT data_;
@@ -141,7 +141,7 @@ template <typename Derived, typename PtrT> class RawAccessBase
 public:
   explicit RawAccessBase(PtrT data) : data_{data} {}
 
-  inline int toLinearIndex(const Indices& pt) const { return (derived()->extents().x * pt.y) + pt.x; }
+  inline int toLinearIndex(const Indices& pt) const { return (derived()->extents().y * pt.x) + pt.y; }
 
   inline void swap(Derived& other)
   {
