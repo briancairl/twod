@@ -1,5 +1,5 @@
 /**
- * @copyright 2018 TwoD
+ * @copyright 2018-2020 TwoD
  * @author Brian Cairl
  */
 
@@ -50,6 +50,25 @@ TEST(Grid, UniformInitialValueConstructor)
   }
 }
 
+TEST(Grid, SetZeroIntCell)
+{
+  Grid<int> grid{Extents{20, 10}, 1};
+  grid.set_zero();
+  for (const auto& v : grid)
+  {
+    ASSERT_EQ(v, 0);
+  }
+}
+
+TEST(Grid, SetZeroFloatCell)
+{
+  Grid<float> grid{Extents{20, 10}, 1.f};
+  grid.set_zero();
+  for (const auto& v : grid)
+  {
+    ASSERT_EQ(v, 0.f);
+  }
+}
 
 TEST(Grid, CopyConstructor)
 {

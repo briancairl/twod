@@ -1,15 +1,15 @@
 /**
- * @copyright 2018-2019 TwoD
+ * @copyright 2018-2020 TwoD
  * @author Brian Cairl
  *
  * @file grid.h
- * @brief Grid container and view implementations
  */
 #ifndef TWOD_GRID_H
 #define TWOD_GRID_H
 
 // C++ Standard Library
 #include <array>
+#include <cstring>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -87,6 +87,21 @@ public:
    * @return view
    */
   inline auto view() const { return view(bounds()); }
+
+  /**
+   * @brief Zeros out grid memory for grids with standard-layout cell types
+   *
+   * @tparam OtherDerivedT  CRTP-derived <code>GridBase</code> object
+   *
+   * @param other  other grid
+   * @return <code>*this</code>
+   */
+  inline void set_zero()
+  {
+    using CellType = cell_t<DerivedT>;
+    static_assert(std::is_standard_layout<CellType>(), "Cell type must be standard-layout to use set_zero()");
+    std::memset(this->derived()->data(), 0, sizeof(CellType) * this->derived()->extents().area());
+  }
 
   /**
    * @brief Generic assignment from <code>GridBase</code> derivative
