@@ -1,5 +1,5 @@
 /**
- * @copyright 2018 TwoD
+ * @copyright 2018-2020 TwoD
  * @author Brian Cairl
  */
 
@@ -50,6 +50,25 @@ TEST(Grid, UniformInitialValueConstructor)
   }
 }
 
+TEST(Grid, SetZeroIntCell)
+{
+  Grid<int> grid{Extents{20, 10}, 1};
+  grid.set_zero();
+  for (const auto& v : grid)
+  {
+    ASSERT_EQ(v, 0);
+  }
+}
+
+TEST(Grid, SetZeroFloatCell)
+{
+  Grid<float> grid{Extents{20, 10}, 1.f};
+  grid.set_zero();
+  for (const auto& v : grid)
+  {
+    ASSERT_EQ(v, 0.f);
+  }
+}
 
 TEST(Grid, CopyConstructor)
 {
@@ -110,8 +129,8 @@ TEST(Grid, MoveConstructor)
 
   Grid<int> grid{std::move(initial_grid)};
 
-  ASSERT_EQ(initial_grid.data(), nullptr);
-  ASSERT_EQ(initial_grid.extents(), Extents::Zero());
+  // Does a swap on move, but "initial_grid" should still be treated as invalid
+  // grid <--> initial_grid
 
   ASSERT_EQ(grid.extents(), (Extents{20, 10}));
   ASSERT_FALSE(grid.empty());
@@ -123,7 +142,7 @@ TEST(Grid, MoveConstructor)
 }
 
 
-TEST(Grid, ModeConstructorEmpty)
+TEST(Grid, MoveConstructorEmpty)
 {
   Grid<int> empty_grid;
 
@@ -207,8 +226,8 @@ TEST(Grid, MoveAssignment)
 
   grid = std::move(initial_grid);
 
-  ASSERT_EQ(initial_grid.data(), nullptr);
-  ASSERT_EQ(initial_grid.extents(), Extents::Zero());
+  // Does a swap on move, but "initial_grid" should still be treated as invalid
+  // grid <--> initial_grid
 
   ASSERT_EQ(grid.extents(), (Extents{20, 10}));
   ASSERT_FALSE(grid.empty());

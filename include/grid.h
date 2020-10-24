@@ -1,15 +1,15 @@
 /**
- * @copyright 2018-2019 TwoD
+ * @copyright 2018-2020 TwoD
  * @author Brian Cairl
  *
  * @file grid.h
- * @brief Grid container and view implementations
  */
 #ifndef TWOD_GRID_H
 #define TWOD_GRID_H
 
 // C++ Standard Library
 #include <array>
+#include <cstring>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -87,6 +87,21 @@ public:
    * @return view
    */
   inline auto view() const { return view(bounds()); }
+
+  /**
+   * @brief Zeros out grid memory for grids with standard-layout cell types
+   *
+   * @tparam OtherDerivedT  CRTP-derived <code>GridBase</code> object
+   *
+   * @param other  other grid
+   * @return <code>*this</code>
+   */
+  inline void set_zero()
+  {
+    using CellType = cell_t<DerivedT>;
+    static_assert(std::is_standard_layout<CellType>(), "Cell type must be standard-layout to use set_zero()");
+    std::memset(this->derived()->data(), 0, sizeof(CellType) * this->derived()->extents().area());
+  }
 
   /**
    * @brief Generic assignment from <code>GridBase</code> derivative
@@ -584,32 +599,34 @@ class Grid : public GridBase<Grid<CellT, AllocatorT>>, public RawAccessBase<Grid
 public:
   Grid() : GridBaseType{Extents::Zero()}, StorageBaseType{nullptr} {}
 
-  explicit Grid(const Extents& extents) : GridBaseType{extents}, StorageBaseType{allocator_.allocate(extents.area())}
+  explicit Grid(const Extents& extents) :
+      GridBaseType{Extents::Zero()},
+      StorageBaseType{nullptr}
   {
-    construct();
+    resize(extents);
   }
 
   Grid(const Extents& extents, const CellT& val) :
-      GridBaseType{extents},
-      StorageBaseType{allocator_.allocate(extents.area())}
+      GridBaseType{Extents::Zero()},
+      StorageBaseType{nullptr}
   {
-    construct(val);
+    resize(extents, val);
   }
 
   Grid(const Extents& extents, const AllocatorT& alloc) :
-      GridBaseType{extents},
-      StorageBaseType{alloc.allocate(extents.area())},
+      GridBaseType{Extents::Zero()},
+      StorageBaseType{nullptr},
       allocator_{alloc}
   {
-    construct();
+    resize(extents);
   }
 
   Grid(const Extents& extents, const CellT& val, const AllocatorT& alloc) :
-      GridBaseType{extents},
-      StorageBaseType{alloc.allocate(extents.area())},
+      GridBaseType{Extents::Zero()},
+      StorageBaseType{nullptr},
       allocator_{alloc}
   {
-    construct(val);
+    resize(extents, val);
   }
 
   Grid(const Grid& other) : Grid{} { Grid::operator=(other); }
@@ -678,10 +695,14 @@ public:
 
   inline Grid& operator=(Grid&& other)
   {
+    // Do a swap on move so that "other" cleans up data previously in *this
+    auto* swap_data =  Grid::data_;
+    const auto swap_extents =  other.extents();
+
     GridBaseType::set_extents(other.extents());
     Grid::data_ = other.data_;
-    other.data_ = nullptr;
-    other.set_extents(Extents::Zero());
+    other.data_ = swap_data;
+    other.set_extents(swap_extents);
     return *this;
   }
 

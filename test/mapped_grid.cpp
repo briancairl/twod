@@ -22,7 +22,7 @@ TEST(MappedGrid, InitSizeConstructor)
 {
   constexpr Extents extents{20, 10};
 
-  std::unique_ptr<int> block{new int[extents.area()]};
+  std::unique_ptr<int[]> block{new int[extents.area()]};
 
   MappedGrid<int> grid{extents, block.get()};
 
@@ -35,7 +35,7 @@ TEST(MappedGrid, CopyConstructor)
 {
   constexpr Extents extents{20, 10};
 
-  std::unique_ptr<int> block{new int[extents.area()]};
+  std::unique_ptr<int[]> block{new int[extents.area()]};
 
   std::fill(block.get(), block.get() + extents.area(), 1);
 
@@ -67,7 +67,7 @@ TEST(MappedGrid, CopyAssignment)
 {
   constexpr Extents extents{20, 10};
 
-  std::unique_ptr<int> block{new int[extents.area()]};
+  std::unique_ptr<int[]> block{new int[extents.area()]};
 
   std::fill(block.get(), block.get() + extents.area(), 1);
 
@@ -101,7 +101,7 @@ TEST(MappedGrid, Swap)
 {
   constexpr Extents extents{20, 10};
 
-  std::unique_ptr<int> block{new int[extents.area()]};
+  std::unique_ptr<int[]> block{new int[extents.area()]};
 
   std::fill(block.get(), block.get() + extents.area(), 1);
 
@@ -139,7 +139,7 @@ TEST(MappedGrid, ColViewIterator)
 {
   constexpr Extents extents{20, 10};
 
-  std::unique_ptr<int> block{new int[extents.area()]};
+  std::unique_ptr<int[]> block{new int[extents.area()]};
 
   std::fill(block.get(), block.get() + extents.area(), 1);
 
@@ -167,7 +167,7 @@ TEST(MappedGrid, ColViewIteratorEndTag)
 {
   constexpr Extents extents{20, 10};
 
-  std::unique_ptr<int> block{new int[extents.area()]};
+  std::unique_ptr<int[]> block{new int[extents.area()]};
 
   MappedGrid<int> grid{extents, block.get()};
   ASSERT_EQ(grid.extents(), extents);
@@ -190,7 +190,7 @@ TEST(MappedGrid, RowViewIterator)
 {
   constexpr Extents extents{20, 10};
 
-  std::unique_ptr<int> block{new int[extents.area()]};
+  std::unique_ptr<int[]> block{new int[extents.area()]};
 
   MappedGrid<int> grid{extents, block.get()};
   ASSERT_EQ(grid.extents(), extents);
@@ -216,7 +216,7 @@ TEST(MappedGrid, RowViewIteratorEndTag)
 {
   constexpr Extents extents{20, 10};
 
-  std::unique_ptr<int> block{new int[extents.area()]};
+  std::unique_ptr<int[]> block{new int[extents.area()]};
 
   MappedGrid<int> grid{extents, block.get()};
   ASSERT_EQ(grid.extents(), extents);
@@ -239,7 +239,7 @@ TEST(MappedGrid, ViewBoundsIteration)
 {
   constexpr Extents extents{20, 10};
 
-  std::unique_ptr<int> block{new int[extents.area()]};
+  std::unique_ptr<int[]> block{new int[extents.area()]};
 
   MappedGrid<int> grid{extents, block.get()};
   ASSERT_EQ(grid.extents(), extents);
