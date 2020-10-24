@@ -599,32 +599,34 @@ class Grid : public GridBase<Grid<CellT, AllocatorT>>, public RawAccessBase<Grid
 public:
   Grid() : GridBaseType{Extents::Zero()}, StorageBaseType{nullptr} {}
 
-  explicit Grid(const Extents& extents) : GridBaseType{extents}, StorageBaseType{allocator_.allocate(extents.area())}
+  explicit Grid(const Extents& extents) :
+      GridBaseType{Extents::Zero()},
+      StorageBaseType{nullptr}
   {
-    construct();
+    resize(extents);
   }
 
   Grid(const Extents& extents, const CellT& val) :
-      GridBaseType{extents},
-      StorageBaseType{allocator_.allocate(extents.area())}
+      GridBaseType{Extents::Zero()},
+      StorageBaseType{nullptr}
   {
-    construct(val);
+    resize(extents, val);
   }
 
   Grid(const Extents& extents, const AllocatorT& alloc) :
-      GridBaseType{extents},
-      StorageBaseType{alloc.allocate(extents.area())},
+      GridBaseType{Extents::Zero()},
+      StorageBaseType{nullptr},
       allocator_{alloc}
   {
-    construct();
+    resize(extents);
   }
 
   Grid(const Extents& extents, const CellT& val, const AllocatorT& alloc) :
-      GridBaseType{extents},
-      StorageBaseType{alloc.allocate(extents.area())},
+      GridBaseType{Extents::Zero()},
+      StorageBaseType{nullptr},
       allocator_{alloc}
   {
-    construct(val);
+    resize(extents, val);
   }
 
   Grid(const Grid& other) : Grid{} { Grid::operator=(other); }
@@ -693,10 +695,14 @@ public:
 
   inline Grid& operator=(Grid&& other)
   {
+    // Do a swap on move so that "other" cleans up data previously in *this
+    auto* swap_data =  Grid::data_;
+    const auto swap_extents =  other.extents();
+
     GridBaseType::set_extents(other.extents());
     Grid::data_ = other.data_;
-    other.data_ = nullptr;
-    other.set_extents(Extents::Zero());
+    other.data_ = swap_data;
+    other.set_extents(swap_extents);
     return *this;
   }
 
