@@ -23,3 +23,7 @@ In the `WORKSPACE` folder
 bazel test ... --test_output=all --cache_test_results=no
 
 ```
+
+## TODO
+
+- [ ] `TiledGrid` is currently this strange "space saving" grid that "expands" when you access the tile that an element is on. This includes assignment over range iteration. I don't think this is really a practical thing, at least not in this form. I will eventually change it so that all the memory is allocated up-front, and the tiles are simply such that accesses to nearby cells provide better memory locality when accessing elements from the same tile. Maybe this is more useful for searching applications?
