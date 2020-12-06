@@ -552,12 +552,12 @@ private:
   /**
    * @brief Returns iterator (mutable) to first element
    */
-  inline auto begin_impl() { return ColViewIterator<View>{*this}; }
+  inline auto begin_impl() { return RowViewIterator<View>{*this}; }
 
   /**
    * @brief Returns iterator (immutable) to first element
    */
-  inline auto begin_impl() const { return ColViewIterator<const View>{*this}; }
+  inline auto begin_impl() const { return RowViewIterator<const View>{*this}; }
 
   /**
    * @brief Returns iterator (immutable) to one past last element
