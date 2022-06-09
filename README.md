@@ -2,7 +2,7 @@
 
 ## Description
 
-Collection of generic grid and grid viewing containers. Includes dynamic, fixed size and memeory-mapped grid containers. Compiles with C++17.
+Collection of generic grid and grid viewing containers. Includes dynamic, fixed size and memory-mapped grid containers. Compiles with C++17.
 
 Grids and views are implemented with a common CRTP base. Functions working on grids can be written like so to accept any grid-like type:
 
